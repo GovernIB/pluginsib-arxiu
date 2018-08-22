@@ -5,7 +5,7 @@ package es.caib.plugins.arxiu.api;
 
 import java.util.List;
 
-import org.fundaciobit.plugins.IPlugin;
+import org.fundaciobit.pluginsib.core.IPlugin;
 
 /**
  * Interfície del plugin per a accedir a la funcionalitat 

@@ -6,7 +6,7 @@ package es.caib.plugins.arxiu.api;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
-import org.fundaciobit.plugins.utils.AbstractPluginProperties;
+import org.fundaciobit.pluginsib.core.utils.AbstractPluginProperties;
 
 /**
  * Classe abstracta del plugin d'arxiu que incorpora funcionalitat
