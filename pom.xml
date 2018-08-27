@@ -5,7 +5,7 @@
   <artifactId>pluginsib-arxiu</artifactId>
   <version>2.0.0</version>
   <packaging>pom</packaging>
-  <name>PluginsIB - Arxiu Plugins</name>
+  <name>PluginsIB - Arxiu</name>
   <properties>
     <plugin.arxiu.version>1.0.2</plugin.arxiu.version>
     <plugins.api.version>1.0.0</plugins.api.version>
