@@ -11,8 +11,8 @@ import java.util.UUID;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
-import org.fundaciobit.pluginsib.core.utils.AbstractPluginProperties;
 
+import es.caib.plugins.arxiu.api.AbstractArxiuPlugin;
 import es.caib.plugins.arxiu.api.ArxiuException;
 import es.caib.plugins.arxiu.api.Carpeta;
 import es.caib.plugins.arxiu.api.ConsultaFiltre;
@@ -28,7 +28,7 @@ import es.caib.plugins.arxiu.api.ExpedientEstat;
 import es.caib.plugins.arxiu.api.Firma;
 import es.caib.plugins.arxiu.api.IArxiuPlugin;
 
-public class ArxiuPluginFilesystem extends AbstractPluginProperties implements IArxiuPlugin {
+public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiuPlugin {
 
 	private static final String ARXIUFILESYSTEM_BASE_PROPERTY = ARXIU_BASE_PROPERTY + "filesystem.";
 
@@ -758,5 +758,16 @@ public class ArxiuPluginFilesystem extends AbstractPluginProperties implements I
 	private String getPropertyOrganCodiDir3() {
 		return getProperty(ARXIUFILESYSTEM_BASE_PROPERTY + "organ.codi.dir3");
 	}
+
+  @Override
+  public String getCsv(String identificadorDoc) throws ArxiuException {
+    // TODO No se SI ESTA BE
+    return identificadorDoc;
+  }
+
+  @Override
+  protected String getPropertyBase() {
+    return ARXIUFILESYSTEM_BASE_PROPERTY;
+  }
 
 }

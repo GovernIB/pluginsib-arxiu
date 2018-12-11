@@ -1,10 +1,6 @@
-/**
- * 
- */
 package es.caib.plugins.arxiu.api;
 
 import java.util.List;
-
 import org.fundaciobit.pluginsib.core.IPlugin;
 
 /**
@@ -410,5 +406,38 @@ public interface IArxiuPlugin extends IPlugin {
 	 * @return true si el genera o false en cas contrari.
 	 */
 	public boolean generaIdentificadorNti();
+
+  /**
+   * 
+   * @param identificadorDoc
+   * @return
+   * @throws ArxiuException
+   */
+  public String getCsv(String identificadorDoc) throws ArxiuException;
+
+	
+	/**
+	 * 
+	 * @param identificadorDoc
+	 * @return
+	 * @throws ArxiuException
+	 */
+  public String getCsvValidationUrl(String identificadorDoc) throws ArxiuException;
+
+  /**
+   * 
+   * @param identificadorDoc
+   * @return
+   * @throws ArxiuException
+   */
+  public String getCsvValidationWeb(String identificadorDoc) throws ArxiuException;
+
+  /**
+   * 
+   * @param identificadorDoc
+   * @return
+   * @throws ArxiuException
+   */
+  public String getCsvGenerationDefinition(String identificadorDoc) throws ArxiuException;
 
 }

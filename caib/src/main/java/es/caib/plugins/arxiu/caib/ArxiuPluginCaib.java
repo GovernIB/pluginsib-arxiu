@@ -15,7 +15,7 @@ import java.util.Properties;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
-import org.fundaciobit.pluginsib.core.utils.AbstractPluginProperties;
+import org.fundaciobit.pluginsib.core.utils.MetadataConstants;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
@@ -99,6 +99,7 @@ import es.caib.arxiudigital.apirest.CSGD.peticiones.SetFolder;
 import es.caib.arxiudigital.apirest.constantes.MetadatosDocumento;
 import es.caib.arxiudigital.apirest.constantes.Servicios;
 import es.caib.arxiudigital.apirest.constantes.TiposObjetoSGD;
+import es.caib.plugins.arxiu.api.AbstractArxiuPlugin;
 import es.caib.plugins.arxiu.api.ArxiuException;
 import es.caib.plugins.arxiu.api.ArxiuValidacioException;
 import es.caib.plugins.arxiu.api.Carpeta;
@@ -123,8 +124,9 @@ import es.caib.plugins.arxiu.caib.ArxiuCaibClient.GeneradorParam;
  * a l'arxiu de la CAIB mitjançant l'API REST.
  * 
  * @author Limit Tecnologies <limit@limit.es>
+ * @author anadal(u80067)
  */
-public class ArxiuPluginCaib extends AbstractPluginProperties implements IArxiuPlugin {
+public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin  {
 
 	private static final String ARXIUCAIB_BASE_PROPERTY = ARXIU_BASE_PROPERTY + "caib.";
 	private static final int NUM_PAGINES_RESULTAT_CERCA = 100;
@@ -144,9 +146,7 @@ public class ArxiuPluginCaib extends AbstractPluginProperties implements IArxiuP
 	public ArxiuPluginCaib() {
 		super();
 	}
-	public ArxiuPluginCaib(Properties properties) {
-		super("", properties);
-	}
+
 	public ArxiuPluginCaib(String propertyKeyBase, Properties properties) {
 		super(propertyKeyBase, properties);
 	}
@@ -1663,5 +1663,16 @@ public class ArxiuPluginCaib extends AbstractPluginProperties implements IArxiuP
 				JERSEY_TIMEOUT_READ);
 		return Integer.parseInt(timeout);
 	}
+	
+  @Override
+  public String getCsv(String identificadorDoc) throws ArxiuException {
+    Document doc =  documentDetalls(identificadorDoc, null, false);
+    return (String)doc.getMetadades().getMetadadesAddicionals().get(MetadataConstants.ENI_CSV);
+  }
+  
+  @Override
+  protected String getPropertyBase() {
+    return ARXIUCAIB_BASE_PROPERTY;
+  }
 
 }
