@@ -1,6 +1,7 @@
 package es.caib.plugins.arxiu.api;
 
 import java.util.List;
+
 import org.fundaciobit.pluginsib.core.IPlugin;
 
 /**
@@ -8,6 +9,7 @@ import org.fundaciobit.pluginsib.core.IPlugin;
  * d'un arxiu digital.
  *
  * @author Limit Tecnologies <limit@limit.es>
+ * @author anadal(u80067)
  */
 public interface IArxiuPlugin extends IPlugin {
 
@@ -407,6 +409,36 @@ public interface IArxiuPlugin extends IPlugin {
 	 */
 	public boolean generaIdentificadorNti();
 
+	
+  /**
+  *
+  * @param custodyID
+  * @return
+  * @throws Exception
+  */
+ String getOriginalFileUrl(String identificadorDoc)
+     throws ArxiuException;
+
+ /**
+  *
+  * @param custodyID
+  * @return
+  * @throws Exception
+  */
+ String getPrintableFileUrl(String identificadorDoc)
+     throws ArxiuException;
+
+ /**
+  *
+  * @param custodyID
+  * @return
+  * @throws Exception
+  */
+ String getEniFileUrl(String identificadorDoc)
+     throws ArxiuException;
+
+	
+	
   /**
    * 
    * @param identificadorDoc
@@ -416,13 +448,6 @@ public interface IArxiuPlugin extends IPlugin {
   public String getCsv(String identificadorDoc) throws ArxiuException;
 
 	
-	/**
-	 * 
-	 * @param identificadorDoc
-	 * @return
-	 * @throws ArxiuException
-	 */
-  public String getCsvValidationUrl(String identificadorDoc) throws ArxiuException;
 
   /**
    * 

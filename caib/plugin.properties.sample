@@ -7,3 +7,15 @@ plugin.arxiu.caib.conversio.imprimible.url=http://localhost:28080/concsv/rest/pr
 #plugin.arxiu.caib.conversio.imprimible.url=https://proves.caib.es/concsv/rest/printable/uuid
 plugin.arxiu.caib.conversio.imprimible.usuari=USUARI
 plugin.arxiu.caib.conversio.imprimible.contrasenya=PASSWD
+
+
+#plugin.arxiu.caib.original_file_url_EL=http://localhost:28080/concsv/rest/original/uuid/${uuid}
+
+#plugin.arxiu.caib.printable_file_url_EL=http://localhost:28080/concsv/rest/printable/uuid/${uuid}
+
+#plugin.arxiu.caib.eni_file_url_EL=http://localhost:28080/concsv/rest/eni/uuid/${uuid}
+
+#plugin.arxiu.caib.csv_validation_web_EL=http://localhost:28080/concsv/
+
+#plugin.arxiu.caib.csv_generation_definition=http://localhost:28080/concsv/csv_generation_definition.pdf
+

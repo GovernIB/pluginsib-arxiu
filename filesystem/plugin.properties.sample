@@ -1,2 +1,13 @@
 plugin.arxiu.filesystem.base.path=/opt/app-data/arxiu/filesystem
 plugin.arxiu.filesystem.organ.codi.dir3=A04013511
+
+#plugin.arxiu.filesystem.original_file_url_EL=http://localhost:28080/filesystemweb/original/uuid/${uuid}
+
+#plugin.arxiu.filesystem.printable_file_url_EL=http://localhost:28080filesystemweb/printable/uuid/${uuid}
+
+#plugin.arxiu.filesystem.eni_file_url_EL=http://localhost:28080/filesystemweb/eni/uuid/${uuid}
+
+#plugin.arxiu.filesystem.csv_validation_web_EL=http://localhost:28080/filesystemweb/
+
+#plugin.arxiu.filesystem.csv_generation_definition=http://localhost:28080/filesystemweb/csv_generation_definition.pdf
+

@@ -18,11 +18,18 @@ import freemarker.template.Template;
  * @author anadal(u80067)
  *
  */
-public abstract class AbstractArxiuPlugin extends AbstractPluginProperties implements IArxiuPlugin {
-  
-  public static final String ABSTRACT_CSV_VALIDATION_URL = "csv_validation_url_expressionlanguage";
+public abstract class AbstractArxiuPlugin extends AbstractPluginProperties implements
+    IArxiuPlugin {
 
-  public static final String ABSTRACT_CSV_VALIDATION_WEB = "csv_validation_web_expressionlanguage";
+  public static final String ABSTRACT_ORIGINAL_FILE_URL_EXPRESSION_LANGUAGE = "original_file_url_EL";
+
+  public static final String ABSTRACT_PRINTABLE_FILE_URL_EXPRESSION_LANGUAGE = "printable_file_url_EL";
+
+  public static final String ABSTRACT_ENI_FILE_URL_EXPRESSION_LANGUAGE = "eni_file_url_EL";
+
+  public static final String ABSTRACT_CSV = "csv_EL";
+
+  public static final String ABSTRACT_CSV_VALIDATION_WEB = "csv_validation_web_EL";
 
   public static final String ABSTRACT_CSV_GENERATION_DEFINITION = "csv_generation_definition";
 
@@ -34,21 +41,19 @@ public abstract class AbstractArxiuPlugin extends AbstractPluginProperties imple
     super(propertyKeyBase, properties);
   }
 
-
   public AbstractArxiuPlugin(String propertyKeyBase) {
     super(propertyKeyBase);
   }
 
-
   // Implementar
   protected abstract String getPropertyBase();
 
-
   @Override
-  public String getCsvValidationUrl(String identificadorDoc) throws ArxiuException {
+  public String getOriginalFileUrl(String identificadorDoc) throws ArxiuException {
 
-    String csvValidationUrlEL = getProperty(getPropertyBase() + ABSTRACT_CSV_VALIDATION_URL);
-    
+    String csvValidationUrlEL = getProperty(getPropertyBase()
+        + ABSTRACT_ORIGINAL_FILE_URL_EXPRESSION_LANGUAGE);
+
     Map<String, Object> parameters = new HashMap<String, Object>();
     parameters.put("uuid", identificadorDoc);
 
@@ -56,7 +61,34 @@ public abstract class AbstractArxiuPlugin extends AbstractPluginProperties imple
 
   }
 
+  /**
+  * 
+  */
+  public String getPrintableFileUrl(String identificadorDoc) throws ArxiuException {
 
+    String csvValidationUrlEL = getProperty(getPropertyBase()
+        + ABSTRACT_PRINTABLE_FILE_URL_EXPRESSION_LANGUAGE);
+
+    Map<String, Object> parameters = new HashMap<String, Object>();
+    parameters.put("uuid", identificadorDoc);
+
+    return processExpressionLanguage(csvValidationUrlEL, parameters);
+  }
+
+  /**
+ * 
+ */
+  public String getEniFileUrl(String identificadorDoc) throws ArxiuException {
+
+    String csvValidationUrlEL = getProperty(getPropertyBase()
+        + ABSTRACT_ENI_FILE_URL_EXPRESSION_LANGUAGE);
+
+    Map<String, Object> parameters = new HashMap<String, Object>();
+    parameters.put("uuid", identificadorDoc);
+
+    return processExpressionLanguage(csvValidationUrlEL, parameters);
+
+  }
 
   @Override
   public String getCsvValidationWeb(String identificadorDoc) throws ArxiuException {
@@ -65,7 +97,7 @@ public abstract class AbstractArxiuPlugin extends AbstractPluginProperties imple
 
     Map<String, Object> parameters = new HashMap<String, Object>();
     parameters.put("uuid", identificadorDoc);
-    
+
     return processExpressionLanguage(csvValidatioWebEL, parameters);
   }
 
@@ -74,14 +106,12 @@ public abstract class AbstractArxiuPlugin extends AbstractPluginProperties imple
 
     String csvGenerationDefinitionEL = getProperty(getPropertyBase()
         + ABSTRACT_CSV_GENERATION_DEFINITION);
-    
+
     Map<String, Object> parameters = new HashMap<String, Object>();
     parameters.put("uuid", identificadorDoc);
-    
+
     return processExpressionLanguage(csvGenerationDefinitionEL, parameters);
   }
-  
-  
 
   public static String processExpressionLanguage(String plantilla,
       Map<String, Object> custodyParameters) throws ArxiuException {
@@ -116,5 +146,5 @@ public abstract class AbstractArxiuPlugin extends AbstractPluginProperties imple
       throw new ArxiuException(msg, e);
     }
   }
-  
+
 }
