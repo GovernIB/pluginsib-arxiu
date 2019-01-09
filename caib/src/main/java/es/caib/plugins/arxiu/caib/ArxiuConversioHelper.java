@@ -4,15 +4,17 @@
 package es.caib.plugins.arxiu.caib;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+
+import javax.xml.bind.DatatypeConverter;
 
 import com.sun.jersey.core.util.Base64;
 
@@ -773,29 +775,27 @@ public class ArxiuConversioHelper {
 		}
 	}
 
-	private static String formatDateIso8601(Date date) {
-		if (date == null) {
-			return null;
-		}
-		TimeZone tz = TimeZone.getTimeZone("UTC");
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-		df.setTimeZone(tz);
-		return df.format(date);
-	}
+  private static String formatDateIso8601(Date date) {
+    if (date == null) {
+      return null;
+    }
+    TimeZone tz = TimeZone.getTimeZone("UTC");
+    DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    df.setTimeZone(tz);
+    return df.format(date);
+  }
 
-	private static Date parseDateIso8601(String date) throws ArxiuException {
-		if (date == null) {
-			return null;
-		}
-		TimeZone tz = TimeZone.getTimeZone("UTC");
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-		df.setTimeZone(tz);
-		try {
-			return df.parse(date);
-		} catch (ParseException e) {
-			throw new ArxiuException("No s'ha pogut parsejar el valor per el camp Data (" + "valor=" + date + ")");
-		}
-	}
+  private static Date parseDateIso8601(String date) throws ArxiuException {
+    if (date == null) {
+      return null;
+    }
+    try {
+      Calendar c = DatatypeConverter.parseDateTime(date);
+      return c.getTime();
+    } catch (IllegalArgumentException ex) {
+      throw new ArxiuException("No s'ha pogut parsejar el valor de la data (valor=" + date + ")");
+    }
+  }
 
 	private static String revisarContingutNom(String nom) {
 		if (nom == null)

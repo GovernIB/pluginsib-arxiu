@@ -1,6 +1,3 @@
-/**
- * 
- */
 package es.caib.plugins.arxiu.caib;
 
 import java.io.IOException;
@@ -115,6 +112,7 @@ import es.caib.plugins.arxiu.api.DocumentMetadades;
 import es.caib.plugins.arxiu.api.DocumentRepositori;
 import es.caib.plugins.arxiu.api.Expedient;
 import es.caib.plugins.arxiu.api.Firma;
+import es.caib.plugins.arxiu.api.FirmaPerfil;
 import es.caib.plugins.arxiu.api.FirmaTipus;
 import es.caib.plugins.arxiu.api.IArxiuPlugin;
 import es.caib.plugins.arxiu.caib.ArxiuCaibClient.GeneradorParam;
@@ -1667,8 +1665,28 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
   @Override
   public String getCsv(String identificadorDoc) throws ArxiuException {
     Document doc =  documentDetalls(identificadorDoc, null, false);
-    return (String)doc.getMetadades().getMetadadesAddicionals().get(MetadataConstants.ENI_CSV);
+    
+//  Map<String, Object> metas = doc.getMetadades().getMetadadesAddicionals();
+//  
+//  System.out.println("\n\n\n    SIZE = " + metas.size());
+//  for(String key : metas.keySet()) {
+//    System.out.println(" TTTTTTTTTT   key[" + key + "]  => " + metas.get(key));
+//  }
+//  System.out.println("\n\n\n");
+
+    List<Firma> firmes = doc.getFirmes();
+    String csv = null;
+
+    for (Firma firma : firmes) {
+      if (firma.getTipus() == FirmaTipus.CSV) {
+        csv = new String(firma.getContingut());
+        break;
+      }
+    }
+
+    return csv; 
   }
+  
   
   @Override
   protected String getPropertyBase() {

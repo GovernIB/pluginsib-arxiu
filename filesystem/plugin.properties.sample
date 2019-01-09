@@ -11,3 +11,4 @@ plugin.arxiu.filesystem.organ.codi.dir3=A04013511
 
 #plugin.arxiu.filesystem.csv_generation_definition=http://localhost:28080/filesystemweb/csv_generation_definition.pdf
 
+#plugin.arxiu.filesystem.validation_file_url_EL=http://localhost:28080/concsv/web/validationfile/${uuid}
