@@ -112,7 +112,6 @@ import es.caib.plugins.arxiu.api.DocumentMetadades;
 import es.caib.plugins.arxiu.api.DocumentRepositori;
 import es.caib.plugins.arxiu.api.Expedient;
 import es.caib.plugins.arxiu.api.Firma;
-import es.caib.plugins.arxiu.api.FirmaPerfil;
 import es.caib.plugins.arxiu.api.FirmaTipus;
 import es.caib.plugins.arxiu.api.IArxiuPlugin;
 import es.caib.plugins.arxiu.caib.ArxiuCaibClient.GeneradorParam;
@@ -120,7 +119,7 @@ import es.caib.plugins.arxiu.caib.ArxiuCaibClient.GeneradorParam;
 /**
  * Implementació de l'API genèrica de l'arxiu per a accedir
  * a l'arxiu de la CAIB mitjançant l'API REST.
- * 
+ *
  * @author Limit Tecnologies <limit@limit.es>
  * @author anadal(u80067)
  */
