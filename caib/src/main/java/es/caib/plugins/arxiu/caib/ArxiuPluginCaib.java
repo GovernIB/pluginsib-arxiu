@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package es.caib.plugins.arxiu.caib;
 
 import java.io.IOException;
@@ -12,7 +15,6 @@ import java.util.Properties;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
-import org.fundaciobit.pluginsib.core.utils.MetadataConstants;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
@@ -20,16 +22,19 @@ import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
+import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.DocClassification;
 import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.DocumentId;
 import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.DocumentNode;
 import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.FileNode;
 import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.Metadata;
+import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.TargetNode;
 import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.VersionNode;
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamCreateChildFile;
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamCreateDocument;
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamCreateDraftDocument;
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamCreateFile;
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamCreateFolder;
+import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamDispatchDocument;
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamGetDocument;
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamNodeID_TargetParent;
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamNodeId;
@@ -45,6 +50,7 @@ import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.CreateDocumentResu
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.CreateDraftDocumentResult;
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.CreateFileResult;
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.CreateFolderResult;
+import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.DispatchDocumentResult;
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.ExportFileResult;
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.GenerateDocCSVResult;
 import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.GetDocVersionListResult;
@@ -73,6 +79,7 @@ import es.caib.arxiudigital.apirest.CSGD.peticiones.CreateDocument;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.CreateDraftDocument;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.CreateFile;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.CreateFolder;
+import es.caib.arxiudigital.apirest.CSGD.peticiones.DispatchDocument;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.ExportFile;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.GenerateDocCSV;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.GetDocVersionList;
@@ -119,7 +126,7 @@ import es.caib.plugins.arxiu.caib.ArxiuCaibClient.GeneradorParam;
 /**
  * Implementació de l'API genèrica de l'arxiu per a accedir
  * a l'arxiu de la CAIB mitjançant l'API REST.
- *
+ * 
  * @author Limit Tecnologies <limit@limit.es>
  * @author anadal(u80067)
  */
@@ -873,22 +880,61 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 	public void documentMoure(
 			final String identificador,
 			final String identificadorDesti) throws ArxiuException {
-		String metode = Servicios.MOVE_DOC;
+		String metode = null;
 		try {
-			getArxiuClient().generarEnviarPeticio(
-					metode,
-					MoveDocument.class,
-					new GeneradorParam<ParamNodeID_TargetParent>() {
-						@Override
-						public ParamNodeID_TargetParent generar() {
-							ParamNodeID_TargetParent param = new ParamNodeID_TargetParent();
-							param.setNodeId(identificador);
-							param.setTargetParent(identificadorDesti);
-							return param;
-						}
-					},
-					ParamNodeID_TargetParent.class,
-					MoveDocumentResult.class);
+			GetDocumentResult resposta = getDocumentResult(
+					identificador,
+					null,
+					false);
+			Document documentOrigen = ArxiuConversioHelper.documentNodeToDocument(
+					resposta.getGetDocumentResult().getResParam(),
+					null);
+			final String serieDocumentalOrigen = findSerieDocumentalExpedientPare(
+					documentOrigen,
+					null);
+			final String serieDocumentalDesti = findSerieDocumentalExpedientPare(
+					null,
+					identificadorDesti);
+			if (serieDocumentalOrigen.equals(serieDocumentalDesti)) {
+				metode = Servicios.MOVE_DOC;
+				getArxiuClient().generarEnviarPeticio(
+						metode,
+						MoveDocument.class,
+						new GeneradorParam<ParamNodeID_TargetParent>() {
+							@Override
+							public ParamNodeID_TargetParent generar() {
+								ParamNodeID_TargetParent param = new ParamNodeID_TargetParent();
+								param.setNodeId(identificador);
+								param.setTargetParent(identificadorDesti);
+								return param;
+							}
+						},
+						ParamNodeID_TargetParent.class,
+						MoveDocumentResult.class);
+			} else {
+				metode = Servicios.DISPATCH_DOC;
+				getArxiuClient().generarEnviarPeticio(
+						metode,
+						DispatchDocument.class,
+						new GeneradorParam<ParamDispatchDocument>() {
+							@Override
+							public ParamDispatchDocument generar() {
+								ParamDispatchDocument param = new ParamDispatchDocument();
+								param.setSourceNodeId(identificador);
+								TargetNode targetNode = new TargetNode();
+								targetNode.setId(identificadorDesti);
+								targetNode.setTargetType("ttttttargetType");
+								DocClassification docClassification = new DocClassification();
+								docClassification.setSerie(serieDocumentalDesti);
+								//docClassification.setType(type);
+								targetNode.setDocClassification(docClassification);
+								param.setTargetNode(targetNode);
+								return param;
+							}
+						},
+						ParamDispatchDocument.class,
+						DispatchDocumentResult.class);
+			}
 		} catch (ArxiuException aex) {
 			throw aex;
 		} catch (Exception ex) {
@@ -1295,7 +1341,7 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 	private String findSerieDocumentalExpedientPare(
 			Document document,
 			String identificadorPare) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, UniformInterfaceException, ClientHandlerException, IOException {
-		if (document.getMetadades() != null && document.getMetadades().getMetadadesAddicionals() != null) {
+		if (document != null && document.getMetadades() != null && document.getMetadades().getMetadadesAddicionals() != null) {
 			Map<String, Object> metadadesAddicionals = document.getMetadades().getMetadadesAddicionals();
 			Object serieDocumental = metadadesAddicionals.get(MetadatosDocumento.CODIGO_CLASIFICACION);
 			if (serieDocumental != null) {
@@ -1660,7 +1706,7 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 				JERSEY_TIMEOUT_READ);
 		return Integer.parseInt(timeout);
 	}
-	
+
   @Override
   public String getCsv(String identificadorDoc) throws ArxiuException {
     Document doc =  documentDetalls(identificadorDoc, null, false);
