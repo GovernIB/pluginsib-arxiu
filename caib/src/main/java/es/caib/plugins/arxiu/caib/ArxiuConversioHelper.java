@@ -309,11 +309,11 @@ public class ArxiuConversioHelper {
 		ExpedientMetadades metadades = new ExpedientMetadades();
 		for (Metadata metadata: metadataList) {
 			if (metadata.getValue() != null) {
-				if(MetadatosDocumento.ID_ENI.equals(metadata.getQname())) {
+				if (MetadatosDocumento.ID_ENI.equals(metadata.getQname())) {
 					metadades.setIdentificador(metadata.getValue().toString());
-				} else if( "eni:v_nti".equals(metadata.getQname())) {
+				} else if ("eni:v_nti".equals(metadata.getQname())) {
 					metadades.setVersioNti(metadata.getValue().toString());
-				} else if(MetadatosExpediente.ORGANO.equals(metadata.getQname())) {
+				} else if (MetadatosExpediente.ORGANO.equals(metadata.getQname())) {
 					Object preOrgan = metadata.getValue();
 					if (preOrgan instanceof List<?>) {
 						metadades.setOrgans((List<String>)preOrgan);
@@ -322,12 +322,12 @@ public class ArxiuConversioHelper {
 						organs.add((String) preOrgan);
 						metadades.setOrgans(organs);
 					}
-				} else if( MetadatosExpediente.FECHA_INICIO.equals(metadata.getQname())) {
+				} else if (MetadatosExpediente.FECHA_INICIO.equals(metadata.getQname())) {
 					metadades.setDataObertura(
 							parseDateIso8601(metadata.getValue().toString()));
-				} else if( MetadatosExpediente.IDENTIFICADOR_PROCEDIMIENTO.equals(metadata.getQname())) {
+				} else if (MetadatosExpediente.IDENTIFICADOR_PROCEDIMIENTO.equals(metadata.getQname())) {
 					metadades.setClassificacio(metadata.getValue().toString());
-				} else if( MetadatosExpediente.ESTADO_EXPEDIENTE.equals(metadata.getQname())) {
+				} else if (MetadatosExpediente.ESTADO_EXPEDIENTE.equals(metadata.getQname())) {
 					if (metadata.getValue() instanceof EstadosExpediente) {
 						metadades.setEstat(
 								ExpedientEstat.toEnum(
@@ -337,7 +337,7 @@ public class ArxiuConversioHelper {
 								ExpedientEstat.toEnum(
 										(String)metadata.getValue()));
 					}
-				} else if(MetadatosExpediente.INTERESADOS.equals(metadata.getQname())) {
+				} else if (MetadatosExpediente.INTERESADOS.equals(metadata.getQname())) {
 					Object preInteressat = metadata.getValue();
 					if (preInteressat instanceof List<?>) {
 						metadades.setInteressats((List<String>)preInteressat);
@@ -346,7 +346,7 @@ public class ArxiuConversioHelper {
 						interessats.add((String) preInteressat);
 						metadades.setInteressats(interessats);
 					}
-				} else if(MetadatosExpediente.CODIGO_CLASIFICACION.equals(metadata.getQname())) {
+				} else if (MetadatosExpediente.CODIGO_CLASIFICACION.equals(metadata.getQname())) {
 					metadades.setSerieDocumental(metadata.getValue().toString());
 				} else {
 					Map<String, Object> metadadesAddicionals = metadades.getMetadadesAddicionals();
@@ -608,37 +608,38 @@ public class ArxiuConversioHelper {
 			if (metadata.getValue() != null) {
 				if (MetadatosDocumento.ID_ENI.equals(metadata.getQname())) {
 					metadades.setIdentificador(metadata.getValue().toString());
-        } else if("eni:v_nti".equals(metadata.getQname())) {
+				} else if ("eni:v_nti".equals(metadata.getQname())) {
 					metadades.setVersioNti(metadata.getValue().toString());
-        } else if(MetadatosDocumento.ORIGEN.equals(metadata.getQname())) {
+				} else if (MetadatosDocumento.ORIGEN.equals(metadata.getQname())) {
 					metadades.setOrigen(
 							ContingutOrigen.toEnum(
 									String.valueOf(metadata.getValue())));
-        } else if(MetadatosDocumento.FECHA_INICIO.equals(metadata.getQname())) {
+				} else if (MetadatosDocumento.FECHA_INICIO.equals(metadata.getQname())) {
 					metadades.setDataCaptura(parseDateIso8601(metadata.getValue().toString()));
-        } else if(MetadatosDocumento.ESTADO_ELABORACION.equals(metadata.getQname())) {
+				} else if (MetadatosDocumento.ESTADO_ELABORACION.equals(metadata.getQname())) {
 					metadades.setEstatElaboracio(
 							DocumentEstatElaboracio.toEnum(
 									metadata.getValue().toString()));
-        } else if(MetadatosDocumento.TIPO_DOC_ENI.equals(metadata.getQname())) {
+				} else if (MetadatosDocumento.TIPO_DOC_ENI.equals(metadata.getQname())) {
 					metadades.setTipusDocumental(
 							DocumentTipus.toEnum(
 									metadata.getValue().toString()));
-        } else if(MetadatosDocumento.ORGANO.equals(metadata.getQname())) {
+				} else if (MetadatosDocumento.ORGANO.equals(metadata.getQname())) {
 					Object preValor = metadata.getValue();
 					if (preValor instanceof List<?>) {
 						metadades.setOrgans((List<String>)metadata.getValue());
 					} else {
 						metadades.setOrgans(Arrays.asList((String)preValor));
 					}
-        } else if(MetadatosDocumento.NOMBRE_FORMATO.equals(metadata.getQname())) {
+					break;
+				} else if (MetadatosDocumento.NOMBRE_FORMATO.equals(metadata.getQname())) {
 					metadades.setFormat(
 							DocumentFormat.toEnum(metadata.getValue().toString()));
-        } else if(MetadatosDocumento.EXTENSION_FORMATO.equals(metadata.getQname())) {
+				} else if (MetadatosDocumento.EXTENSION_FORMATO.equals(metadata.getQname())) {
 					metadades.setExtensio(
 							DocumentExtensio.toEnum(metadata.getValue().toString()));
-				} else if(MetadatosDocumento.CSV.equals(metadata.getQname()) ||
-				 MetadatosDocumento.DEF_CSV.equals(metadata.getQname())) {
+				//} else if (MetadatosDocumento.CSV.equals(metadata.getQname())) {
+				//} else if (MetadatosDocumento.DEF_CSV.equals(metadata.getQname())) {
 				} else {
 					Map<String, Object> metadadesAddicionals = metadades.getMetadadesAddicionals();
 					if (metadadesAddicionals == null) {
@@ -775,32 +776,33 @@ public class ArxiuConversioHelper {
 		}
 	}
 
-  private static String formatDateIso8601(Date date) {
-    if (date == null) {
-      return null;
-    }
-    TimeZone tz = TimeZone.getTimeZone("UTC");
-    DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-    df.setTimeZone(tz);
-    return df.format(date);
-  }
+	private static String formatDateIso8601(Date date) {
+		if (date == null) {
+			return null;
+		}
+		TimeZone tz = TimeZone.getTimeZone("UTC");
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+		df.setTimeZone(tz);
+		return df.format(date);
+	}
 
-  private static Date parseDateIso8601(String date) throws ArxiuException {
-    if (date == null) {
-      return null;
-    }
-    try {
-      Calendar c = DatatypeConverter.parseDateTime(date);
-      return c.getTime();
-    } catch (IllegalArgumentException ex) {
-      throw new ArxiuException("No s'ha pogut parsejar el valor de la data (valor=" + date + ")");
-    }
-  }
+	private static Date parseDateIso8601(String date) throws ArxiuException {
+		if (date == null) {
+			return null;
+		}
+		try {
+			Calendar c = DatatypeConverter.parseDateTime(date);
+			return c.getTime();
+		} catch (IllegalArgumentException ex) {
+			throw new ArxiuException("No s'ha pogut parsejar el valor de la data (valor=" + date + ")");
+		}
+	}
 
 	private static String revisarContingutNom(String nom) {
-		if (nom == null)
+		if (nom == null) {
 			return null;
-		return nom.replaceAll("[\\\\/:*?\"<>|]", "_");
+		}
+		return nom.replace("&", "&amp;").replaceAll("[\\\\/:*?\"<>|]", "_");
 	}
 
 }
