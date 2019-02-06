@@ -399,7 +399,7 @@ public interface IArxiuPlugin extends IPlugin {
 
   /**
    *
-   * @param custodyID
+   * @param identificadorDoc
    * @return
    * @throws Exception
    */
@@ -407,7 +407,7 @@ public interface IArxiuPlugin extends IPlugin {
 
   /**
    *
-   * @param custodyID
+   * @param identificadorDoc
    * @return
    * @throws Exception
    */
@@ -415,7 +415,7 @@ public interface IArxiuPlugin extends IPlugin {
 
   /**
    *
-   * @param custodyID
+   * @param identificadorDoc
    * @return
    * @throws Exception
    */
