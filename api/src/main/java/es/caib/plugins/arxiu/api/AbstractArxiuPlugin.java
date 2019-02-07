@@ -100,17 +100,10 @@ public abstract class AbstractArxiuPlugin extends AbstractPluginProperties imple
 
     return processExpressionLanguage(identificadorDoc, csvValidatioWebEL);
   }
-
-  protected String processExpressionLanguage(String identificadorDoc, String expressionLanguage) {
-    Map<String, Object> parameters = new HashMap<String, Object>();
-    parameters.put("uuid", identificadorDoc);
-    
-    String csv = getCsv(identificadorDoc);
-    parameters.put("csv", csv);
-
-    return processExpressionLanguage(expressionLanguage, parameters);
-  }
-
+  
+  /**
+   * 
+   */
   @Override
   public String getCsvGenerationDefinition(String identificadorDoc) throws ArxiuException {
 
@@ -119,6 +112,30 @@ public abstract class AbstractArxiuPlugin extends AbstractPluginProperties imple
 
     return processExpressionLanguage(identificadorDoc, csvGenerationDefinitionEL);
   }
+  
+  /**
+   * 
+   * @param identificadorDoc
+   * @param expressionLanguage
+   * @return
+   */
+  protected String processExpressionLanguage(String identificadorDoc, String expressionLanguage) {
+    
+    if (expressionLanguage == null || expressionLanguage.trim().length() == 0 || identificadorDoc == null) {
+      return null;
+    }
+    
+    Map<String, Object> parameters = new HashMap<String, Object>();
+    parameters.put("uuid", identificadorDoc);
+    
+    String csv = getCsv(identificadorDoc);
+    if (csv != null && csv.trim().length() != 0) {
+      parameters.put("csv", csv);
+    }
+
+    return processExpressionLanguage(expressionLanguage, parameters);
+  }
+
 
   public static String processExpressionLanguage(String plantilla,
       Map<String, Object> custodyParameters) throws ArxiuException {
