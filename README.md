@@ -5,5 +5,5 @@
 
 Directori | Descripció | Documentació
 ------------ | ------------- | -------------
-caib | Gestor de documents per l'entorn CAIB | -- 
+caib | Gestor de documents per l'entorn CAIB | ../../tree/pluginsib-arxiu-2.0/doc/odt 
 filesystem | Sistema de fitxers de prova | --
