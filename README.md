@@ -5,7 +5,7 @@
 
 Directori | Descripció | Documentació
 ------------ | ------------- | -------------
------------- | ------------- | -------------
+doc | ------------- |[Documentació](../../tree/pluginsib-arxiu-2.0/doc/odt)
 
 ***Implementacions***
 
