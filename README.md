@@ -5,6 +5,6 @@
 
 Directori | Descripció | Documentació
 ------------ | ------------- | -------------
-caib | -- | -- 
+caib | Gestor de documents per l'entorn CAIB | -- 
 doc | -- | --
 filesystem | -- | --
