@@ -6,5 +6,4 @@
 Directori | Descripció | Documentació
 ------------ | ------------- | -------------
 caib | Gestor de documents per l'entorn CAIB | -- 
-doc | -- | --
-filesystem | -- | --
+filesystem | Sistema de fitxers de prova | --
