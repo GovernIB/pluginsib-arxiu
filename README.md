@@ -5,11 +5,12 @@
 
 Directori | Descripció | Documentació
 ------------ | ------------- | -------------
-doc | ------------- |[Documentació](../../tree/pluginsib-arxiu-2.0/doc/odt)
+api_arxiu.odt | Descripció i instruccions d'implementació amb la api del plugin |[Documentació](../../tree/pluginsib-arxiu-2.0/doc/odt/api_arxiu.odt)
 
 ***Implementacions***
 
 Directori | Descripció | Documentació
 ------------ | ------------- | -------------
+api | Interficie de programació del plugin | --
 caib | Gestor de documents per l'entorn CAIB | --
 filesystem | Sistema de fitxers de prova | --
