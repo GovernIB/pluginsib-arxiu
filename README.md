@@ -1,6 +1,12 @@
 # ![Logo](https://github.com/GovernIB/maven/raw/binaris/pluginsib/projectinfo_Attachments/icon.jpg) pluginsib-arxiu-2.0
 *Gestor documental orientat a expedients*
 
+***Documentació***
+
+Directori | Descripció | Documentació
+------------ | ------------- | -------------
+------------ | ------------- | -------------
+
 ***Implementacions***
 
 Directori | Descripció | Documentació
