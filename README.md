@@ -3,7 +3,7 @@
 
 ***Documentació***
 
-Directori | Descripció | Documentació
+Nom | Descripció | Enllaç
 ------------ | ------------- | -------------
 api_arxiu.odt | Descripció i instruccions d'implementació amb la api del plugin |[Documentació](../../tree/pluginsib-arxiu-2.0/doc/odt/api_arxiu.odt)
 
