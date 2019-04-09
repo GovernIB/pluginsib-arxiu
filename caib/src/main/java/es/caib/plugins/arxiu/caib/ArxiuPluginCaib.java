@@ -533,9 +533,15 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 		try {
 			comprovarAbsenciaMetadadaCsv(document.getMetadades());
 			comprovarFirma(document);
-			final String serieDocumental = findSerieDocumentalExpedientPare(
+			
+			final String serieDocumental;
+			if (document.getMetadades().getSerieDocumental() != null && !document.getMetadades().getSerieDocumental().isEmpty())
+				serieDocumental = document.getMetadades().getSerieDocumental();
+			else 
+				serieDocumental = findSerieDocumentalExpedientPare(
 					document,
 					identificadorPare);
+			
 			Document creat = null;
 			if (DocumentEstat.ESBORRANY.equals(document.getEstat())) {
 				metode = Servicios.CREATE_DRAFT;
@@ -1348,7 +1354,17 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 				return (String)serieDocumental;
 			}
 		}
-		GetFileResult expedientPare = findExpedientPare(identificadorPare);
+		
+		GetFileResult expedientPare = null;
+		try {
+			expedientPare = getFileResult(
+					identificadorPare, 
+					null);
+		} catch (Exception ex) {
+			throw new ArxiuValidacioException(
+					"No s'ha pogut trobar la sèrie documental del contingut pare (identificadorPare=" + identificadorPare + ").");
+		}
+		
 		List<Metadata> metadatas = expedientPare.getGetFileResult().getResParam().getMetadataCollection();
 		String serieDocumental = null;
 		for (Metadata metadata: metadatas) {
@@ -1365,43 +1381,6 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 		}
 	}
 
-	private GetFileResult findExpedientPare(
-			String identificadorPare) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, UniformInterfaceException, ClientHandlerException, IOException {
-		String identificadorActual = identificadorPare;
-		GetFileResult getFileResult = null;
-		TiposObjetoSGD tipoObjeto;
-		do {
-			tipoObjeto = null;
-			String identificador = null;
-			try {
-				getFileResult = getFileResult(
-						identificadorActual,
-						null);
-				if (	getFileResult != null && 
-						getFileResult.getGetFileResult() != null &&
-						getFileResult.getGetFileResult().getResParam() != null) {
-					tipoObjeto = getFileResult.getGetFileResult().getResParam().getType();
-					identificador = getFileResult.getGetFileResult().getResParam().getId();
-				}
-			} catch (Exception ex) {
-				GetFolderResult getFolderResult = getFolderResult(
-						identificadorActual);
-				if (	getFolderResult != null && 
-						getFolderResult.getGetFolderResult() != null &&
-						getFolderResult.getGetFolderResult().getResParam() != null) {
-					tipoObjeto = getFolderResult.getGetFolderResult().getResParam().getType();
-					identificador = getFolderResult.getGetFolderResult().getResParam().getId();
-				}
-			}
-			if (tipoObjeto == null) {
-				throw new ArxiuValidacioException(
-						"No s'ha pogut trobar l'expedient superior per al contingut amb identificador " + identificadorPare + ". " +
-						"No s'ha pogut trobar el tipus d'objecte per al contingut amb identificador " + identificadorActual + ".");
-			}
-			identificadorActual = identificador;
-		} while (!TiposObjetoSGD.EXPEDIENTE.equals(tipoObjeto));
-		return getFileResult;
-	}
 
 	private GetFileResult getFileResult(
 			final String identificador,

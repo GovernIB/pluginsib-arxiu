@@ -631,7 +631,6 @@ public class ArxiuConversioHelper {
 					} else {
 						metadades.setOrgans(Arrays.asList((String)preValor));
 					}
-					break;
 				} else if (MetadatosDocumento.NOMBRE_FORMATO.equals(metadata.getQname())) {
 					metadades.setFormat(
 							DocumentFormat.toEnum(metadata.getValue().toString()));

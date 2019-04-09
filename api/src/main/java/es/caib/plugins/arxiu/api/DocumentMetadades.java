@@ -26,7 +26,14 @@ public class DocumentMetadades {
 	private DocumentExtensio extensio;
 	private String identificadorOrigen;
 	private Map<String, Object> metadadesAddicionals;
-
+	String serieDocumental;
+	
+	public String getSerieDocumental() {
+		return serieDocumental;
+	}
+	public void setSerieDocumental(String serieDocumental) {
+		this.serieDocumental = serieDocumental;
+	}
 	public String getIdentificador() {
 		return identificador;
 	}
