@@ -102,7 +102,6 @@ import es.caib.arxiudigital.apirest.CSGD.peticiones.SetFinalDocument;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.SetFolder;
 import es.caib.arxiudigital.apirest.constantes.MetadatosDocumento;
 import es.caib.arxiudigital.apirest.constantes.Servicios;
-import es.caib.arxiudigital.apirest.constantes.TiposObjetoSGD;
 import es.caib.plugins.arxiu.api.AbstractArxiuPlugin;
 import es.caib.plugins.arxiu.api.ArxiuException;
 import es.caib.plugins.arxiu.api.ArxiuValidacioException;
@@ -1434,24 +1433,6 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 				},
 				ParamGetDocument.class,
 				GetDocumentResult.class);
-	}
-
-	private GetFolderResult getFolderResult(
-			final String identificador) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, UniformInterfaceException, ClientHandlerException, IOException {
-		String metode = Servicios.GET_FOLDER;
-		return getArxiuClient().generarEnviarPeticio(
-				metode,
-				GetFolder.class,
-				new GeneradorParam<ParamNodeId>() {
-					@Override
-					public ParamNodeId generar() {
-						ParamNodeId param = new ParamNodeId();
-						param.setNodeId(identificador);
-						return param;
-					}
-				},
-				ParamNodeId.class,
-				GetFolderResult.class);
 	}
 
 	private void comprovarAbsenciaMetadadaCsv(
