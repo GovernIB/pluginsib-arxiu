@@ -4,7 +4,7 @@
 ***Versions***
 
 > - Versió Estable: -
-> - Versió en Desenvolupament: __pluginsib-arxiu-2.0__ (branca [pluginsib-arxiu-2.0](../../tree/pluginsib-arxiu-2.0))
+> - Branca activa: __pluginsib-arxiu-2.0__ (branca [pluginsib-arxiu-2.0](../../tree/pluginsib-arxiu-2.0))
 
 ***Descripció***
 
