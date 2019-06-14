@@ -868,7 +868,7 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 					CopyDocumentResult.class);
 			resposta.getCopyDocumentResult().getResParam();
 			return crearContingutArxiu(
-					resposta.getCopyDocumentResult().getResParam(), 
+					resposta.getCopyDocumentResult().getResParam(),
 					null,
 					ContingutTipus.DOCUMENT,
 					VERSIO_INICIAL_CONTINGUT);
@@ -882,28 +882,28 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 	}
 
 	@Override
-	public void documentMoure(
+	public ContingutArxiu documentMoure(
 			final String identificador,
 			final String identificadorDesti) throws ArxiuException {
-		documentMoure(
+		return documentMoure(
 				identificador,
 				identificadorDesti,
 				null);
 	}
 
 	@Override
-	public void documentMoure(
+	public ContingutArxiu documentMoure(
 			final String identificador,
 			final String identificadorDesti,
 			final String identificadorExpedientDesti) throws ArxiuException {
 		String metode = null;
 		try {
-			GetDocumentResult resposta = getDocumentResult(
+			GetDocumentResult respostaGet = getDocumentResult(
 					identificador,
 					null,
 					false);
 			Document documentOrigen = ArxiuConversioHelper.documentNodeToDocument(
-					resposta.getGetDocumentResult().getResParam(),
+					respostaGet.getGetDocumentResult().getResParam(),
 					null);
 			final String serieDocumentalOrigen = findSerieDocumentalExpedientPare(
 					documentOrigen,
@@ -927,9 +927,10 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 						},
 						ParamNodeID_TargetParent.class,
 						MoveDocumentResult.class);
+				return null;
 			} else {
 				metode = Servicios.DISPATCH_DOC;
-				getArxiuClient().generarEnviarPeticio(
+				DispatchDocumentResult respostaDispatch = getArxiuClient().generarEnviarPeticio(
 						metode,
 						DispatchDocument.class,
 						new GeneradorParam<ParamDispatchDocument>() {
@@ -939,7 +940,7 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 								param.setSourceNodeId(identificador);
 								TargetNode targetNode = new TargetNode();
 								targetNode.setId(identificadorDesti);
-								targetNode.setTargetType("ttttttargetType");
+								targetNode.setTargetType("-");
 								DocClassification docClassification = new DocClassification();
 								docClassification.setSerie(serieDocumentalDesti);
 								//docClassification.setType(type);
@@ -950,6 +951,12 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 						},
 						ParamDispatchDocument.class,
 						DispatchDocumentResult.class);
+				respostaDispatch.getDispatchDocumentResult().getResParam();
+				return crearContingutArxiu(
+						respostaDispatch.getDispatchDocumentResult().getResParam(),
+						null,
+						ContingutTipus.DOCUMENT,
+						VERSIO_INICIAL_CONTINGUT);
 			}
 		} catch (ArxiuException aex) {
 			throw aex;

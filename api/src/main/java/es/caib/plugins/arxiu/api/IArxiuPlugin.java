@@ -261,10 +261,12 @@ public interface IArxiuPlugin extends IPlugin {
 	 *            Identificador del document que es vol moure.
 	 * @param identificadorDesti
 	 *            Identificador de la carpeta o expedient destí.
+	 * @return La informació sobre el document creat si aquest s'ha mogut entre
+	 * diferents sèries documentals. Null en cas contrari.
 	 * @throws ArxiuException
 	 *             Si es produeix algun problema al realitzar l’operació amb l’arxiu.
 	 */
-	public void documentMoure(
+	public ContingutArxiu documentMoure(
 			String identificador,
 			String identificadorDesti) throws ArxiuException;
 
@@ -278,10 +280,12 @@ public interface IArxiuPlugin extends IPlugin {
 	 * @param identificadorExpedientDesti
 	 *            Identificador de l'expedient destí del document. Si coincideix amb el
 	 *            valor de identificadorDesti es pot deixar en blanc.
+	 * @return La informació sobre el document creat si aquest s'ha mogut entre
+	 * diferents sèries documentals. Null en cas contrari.
 	 * @throws ArxiuException
 	 *             Si es produeix algun problema al realitzar l’operació amb l’arxiu.
 	 */
-	public void documentMoure(
+	public ContingutArxiu documentMoure(
 			String identificador,
 			String identificadorDesti,
 			String identificadorExpedientDesti) throws ArxiuException;

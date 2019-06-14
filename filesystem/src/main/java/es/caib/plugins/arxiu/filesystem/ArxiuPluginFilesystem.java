@@ -464,16 +464,16 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 	}
 
 	@Override
-	public void documentMoure(
+	public ContingutArxiu documentMoure(
 			String identificador,
 			String identificadorDesti) throws ArxiuException {
-		documentMoure(
+		return documentMoure(
 				identificador,
 				identificadorDesti);
 	}
 
 	@Override
-	public void documentMoure(
+	public ContingutArxiu documentMoure(
 			String identificador,
 			String identificadorDesti,
 			String identificadorExpedientDesti) throws ArxiuException {
@@ -488,6 +488,7 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			getFilesystemHelper().directoriMoure(
 					origenPath,
 					destiPath);
+			return null;
 		} catch (ArxiuException aex) {
 			throw aex;
 		} catch (Exception ex) {
