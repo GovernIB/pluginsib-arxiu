@@ -97,7 +97,7 @@ public interface IArxiuPlugin extends IPlugin {
 	 *             Si es produeix algun problema al realitzar l’operació amb l’arxiu.
 	 */
 	public ContingutArxiu expedientCrearSubExpedient(
-			Expedient expedient, 
+			Expedient expedient,
 			String identificadorPare) throws ArxiuException;
 
 	/**
@@ -153,12 +153,15 @@ public interface IArxiuPlugin extends IPlugin {
 	 *            Informació per a la creació del document.
 	 * @param identificadorPare
 	 *            Identificador del pare (expedient o carpeta) del document.
+	 * @param identificadorExpedientPare
+	 *            Identificador de l'expedient pare del document. Si coincideix amb el
+	 *            valor de identificadorPare es pot deixar en blanc.
 	 * @return La informació sobre el document creat.
 	 * @throws ArxiuException
 	 *             Si es produeix algun problema al realitzar l’operació amb l’arxiu.
 	 */
 	public ContingutArxiu documentCrear(
-			Document document, 
+			Document document,
 			String identificadorPare) throws ArxiuException;
 
 	/**
@@ -264,6 +267,24 @@ public interface IArxiuPlugin extends IPlugin {
 	public void documentMoure(
 			String identificador,
 			String identificadorDesti) throws ArxiuException;
+
+	/**
+	 * Mou un document a una altra carpeta o expedient.
+	 * 
+	 * @param identificador
+	 *            Identificador del document que es vol moure.
+	 * @param identificadorDesti
+	 *            Identificador de la carpeta o expedient destí.
+	 * @param identificadorExpedientDesti
+	 *            Identificador de l'expedient destí del document. Si coincideix amb el
+	 *            valor de identificadorDesti es pot deixar en blanc.
+	 * @throws ArxiuException
+	 *             Si es produeix algun problema al realitzar l’operació amb l’arxiu.
+	 */
+	public void documentMoure(
+			String identificador,
+			String identificadorDesti,
+			String identificadorExpedientDesti) throws ArxiuException;
 
 	/**
 	 * Exporta el document en format ENI.

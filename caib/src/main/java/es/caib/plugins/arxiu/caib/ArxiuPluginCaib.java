@@ -885,6 +885,17 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 	public void documentMoure(
 			final String identificador,
 			final String identificadorDesti) throws ArxiuException {
+		documentMoure(
+				identificador,
+				identificadorDesti,
+				null);
+	}
+
+	@Override
+	public void documentMoure(
+			final String identificador,
+			final String identificadorDesti,
+			final String identificadorExpedientDesti) throws ArxiuException {
 		String metode = null;
 		try {
 			GetDocumentResult resposta = getDocumentResult(
@@ -899,7 +910,7 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 					null);
 			final String serieDocumentalDesti = findSerieDocumentalExpedientPare(
 					null,
-					identificadorDesti);
+					(identificadorExpedientDesti != null) ? identificadorExpedientDesti : identificadorDesti);
 			if (serieDocumentalOrigen.equals(serieDocumentalDesti)) {
 				metode = Servicios.MOVE_DOC;
 				getArxiuClient().generarEnviarPeticio(
@@ -1237,8 +1248,6 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 	public boolean generaIdentificadorNti() {
 		return true;
 	}
-
-
 
 	private ContingutArxiu crearContingutArxiu(
 			String identificador, 
@@ -1667,35 +1676,23 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 		return Integer.parseInt(timeout);
 	}
 
-  @Override
-  public String getCsv(String identificadorDoc) throws ArxiuException {
-    Document doc =  documentDetalls(identificadorDoc, null, false);
-    
-//  Map<String, Object> metas = doc.getMetadades().getMetadadesAddicionals();
-//  
-//  System.out.println("\n\n\n    SIZE = " + metas.size());
-//  for(String key : metas.keySet()) {
-//    System.out.println(" TTTTTTTTTT   key[" + key + "]  => " + metas.get(key));
-//  }
-//  System.out.println("\n\n\n");
-
-    List<Firma> firmes = doc.getFirmes();
-    String csv = null;
-
-    for (Firma firma : firmes) {
-      if (firma.getTipus() == FirmaTipus.CSV) {
-        csv = new String(firma.getContingut());
-        break;
-      }
-    }
-
-    return csv; 
-  }
-  
-  
-  @Override
-  protected String getPropertyBase() {
-    return ARXIUCAIB_BASE_PROPERTY;
-  }
+	@Override
+	public String getCsv(String identificadorDoc) throws ArxiuException {
+		Document doc =  documentDetalls(identificadorDoc, null, false);
+		List<Firma> firmes = doc.getFirmes();
+		String csv = null;
+		for (Firma firma : firmes) {
+			if (firma.getTipus() == FirmaTipus.CSV) {
+				csv = new String(firma.getContingut());
+				break;
+			}
+		}
+		return csv; 
+	}
+ 
+	@Override
+	protected String getPropertyBase() {
+		return ARXIUCAIB_BASE_PROPERTY;
+	}
 
 }

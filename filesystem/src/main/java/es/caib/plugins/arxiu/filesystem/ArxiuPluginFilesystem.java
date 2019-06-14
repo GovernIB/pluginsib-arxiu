@@ -467,6 +467,16 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 	public void documentMoure(
 			String identificador,
 			String identificadorDesti) throws ArxiuException {
+		documentMoure(
+				identificador,
+				identificadorDesti);
+	}
+
+	@Override
+	public void documentMoure(
+			String identificador,
+			String identificadorDesti,
+			String identificadorExpedientDesti) throws ArxiuException {
 		try {
 			String origenPath = getLuceneHelper().getPath(identificador);
 			String destiPath = getLuceneHelper().getPath(identificadorDesti);
@@ -759,15 +769,15 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 		return getProperty(ARXIUFILESYSTEM_BASE_PROPERTY + "organ.codi.dir3");
 	}
 
-  @Override
-  public String getCsv(String identificadorDoc) throws ArxiuException {
-    // TODO No se SI ESTA BE
-    return identificadorDoc;
-  }
+	@Override
+	public String getCsv(String identificadorDoc) throws ArxiuException {
+		// TODO No se SI ESTA BE
+		return identificadorDoc;
+	}
 
-  @Override
-  protected String getPropertyBase() {
-    return ARXIUFILESYSTEM_BASE_PROPERTY;
-  }
+	@Override
+	protected String getPropertyBase() {
+		return ARXIUFILESYSTEM_BASE_PROPERTY;
+	}
 
 }
