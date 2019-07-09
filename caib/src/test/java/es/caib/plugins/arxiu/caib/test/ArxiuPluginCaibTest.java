@@ -68,18 +68,22 @@ public class ArxiuPluginCaibTest {
 
 	@BeforeClass
 	public static void setUp() throws IOException {
-		Properties properties = new Properties();
-		properties.load(
-				ArxiuPluginCaibTest.class.getClassLoader().getResourceAsStream(
-						"es/caib/plugins/arxiu/caib/test.properties"));
-		arxiuPlugin = new ArxiuPluginCaib(
-				"",
-				properties);
-		organsTest = new ArrayList<String>();
-		organsTest.add("A04013511");
-		interessatsTest = new ArrayList<String>();
-		interessatsTest.add("12345678Z");
-		interessatsTest.add("00000000T");
+		try {
+			Properties properties = new Properties();
+			properties.load(
+					ArxiuPluginCaibTest.class.getClassLoader().getResourceAsStream(
+							"es/caib/plugins/arxiu/caib/test.properties"));
+			arxiuPlugin = new ArxiuPluginCaib(
+					"",
+					properties);
+			organsTest = new ArrayList<String>();
+			organsTest.add("A04013511");
+			interessatsTest = new ArrayList<String>();
+			interessatsTest.add("12345678Z");
+			interessatsTest.add("00000000T");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	@Test
@@ -488,6 +492,264 @@ public class ArxiuPluginCaibTest {
 						} catch (ArxiuException ex) {
 							System.out.println("Ok");
 						}
+					}
+				},
+				expedientPerCrear,
+				documentPerCrear);
+	}
+
+	@Test
+	public void documentFirmatNoDefinitiu() throws Exception {
+		System.out.println("TEST: DOCUMENT FIRMAT NO DEFINITIU");
+		String nomExp = "ARXIUAPI_prova_exp_" + System.currentTimeMillis();
+		final Expedient expedientPerCrear = new Expedient();
+		expedientPerCrear.setNom(nomExp);
+		final ExpedientMetadades metadades = new ExpedientMetadades();
+		metadades.setOrgans(organsTest);
+		metadades.setDataObertura(new Date());
+		metadades.setClassificacio("organo1_PRO_123456789");
+		metadades.setEstat(ExpedientEstat.OBERT);
+		metadades.setInteressats(interessatsTest);
+		metadades.setSerieDocumental(SERIE_DOCUMENTAL);
+		expedientPerCrear.setMetadades(metadades);
+		String nomDoc = "ARXIUAPI_prova_doc_" + System.currentTimeMillis();
+		final Document documentPerCrear = new Document();
+		documentPerCrear.setNom(nomDoc);
+		documentPerCrear.setEstat(DocumentEstat.ESBORRANY);
+		final DocumentMetadades documentMetadades = new DocumentMetadades();
+		documentMetadades.setOrigen(ContingutOrigen.CIUTADA);
+		documentMetadades.setOrgans(organsTest);
+		documentMetadades.setDataCaptura(new Date());
+		documentMetadades.setEstatElaboracio(DocumentEstatElaboracio.ORIGINAL);
+		documentMetadades.setTipusDocumental(DocumentTipus.ALTRES);
+		documentMetadades.setFormat(DocumentFormat.OASIS12);
+		documentMetadades.setExtensio(DocumentExtensio.ODT);
+		documentPerCrear.setMetadades(documentMetadades);
+		DocumentContingut documentContingut = new DocumentContingut();
+		documentContingut.setContingut(
+				IOUtils.toByteArray(
+						getDocumentContingutEsborranyOdt()));
+		documentContingut.setTipusMime("application/vnd.oasis.opendocument.text");
+		documentPerCrear.setContingut(documentContingut);
+		testCreantElements(
+				new TestAmbElementsCreats() {
+					@Override
+					public void executar(List<ContingutArxiu> elementsCreats) throws IOException {
+						//ContingutArxiu expedientCreat = elementsCreats.get(0);
+						//String expedientCreatId = expedientCreat.getIdentificador();
+						ContingutArxiu documentCreat = elementsCreats.get(1);
+						String documentCreatId = documentCreat.getIdentificador();
+						System.out.println(
+								"1.- Guardant firma sense marcar el document com a definitiu (" +
+								"id=" + documentCreatId + ")... ");
+						Document documentPerModificar = new Document();
+						documentPerModificar.setIdentificador(documentCreatId);
+						Firma firmaPades = new Firma();
+						firmaPades.setTipus(FirmaTipus.PADES);
+						firmaPades.setPerfil(FirmaPerfil.EPES);
+						firmaPades.setTipusMime("application/pdf");
+						firmaPades.setContingut(
+								IOUtils.toByteArray(
+										getDocumentFirmaPdf()));
+						documentPerModificar.setFirmes(Arrays.asList(firmaPades));
+						DocumentMetadades documentMetadadesModificar = new DocumentMetadades();
+						documentMetadadesModificar.setFormat(DocumentFormat.PDF);
+						documentMetadadesModificar.setExtensio(DocumentExtensio.PDF);
+						documentPerModificar.setMetadades(documentMetadadesModificar);
+						documentPerModificar.setEstat(DocumentEstat.DEFINITIU);
+						//documentPerModificar.setEstat(DocumentEstat.ESBORRANY);
+						ContingutArxiu contingutModificat = arxiuPlugin.documentModificar(
+								documentPerModificar);
+						assertNotNull(contingutModificat);
+						System.out.println("Ok");
+						System.out.println(
+								"2.- Comprovant firmes del document (" +
+								"id=" + documentCreatId + ")... ");
+						Document documentFirmat = arxiuPlugin.documentDetalls(
+								documentCreatId,
+								null,
+								true);
+						documentPerModificar.setNom(documentPerCrear.getNom());
+						documentPerModificar.setMetadades(null);
+						documentFirmat.setMetadades(null);
+						documentFirmat.setContingut(null);
+						documentComprovar(
+								documentPerModificar,
+								documentFirmat,
+								false);
+						System.out.println("Ok");
+					}
+				},
+				expedientPerCrear,
+				documentPerCrear);
+	}
+
+	/*@Test
+	public void documentFirmatMovimentCarpeta() throws Exception {
+		System.out.println("TEST: DOCUMENT FIRMAT AMV MOVIMENT A CARPETA");
+		String nomExp = "ARXIUAPI_prova_exp_" + System.currentTimeMillis();
+		final Expedient expedientPerCrear = new Expedient();
+		expedientPerCrear.setNom(nomExp);
+		final ExpedientMetadades metadades = new ExpedientMetadades();
+		metadades.setOrgans(organsTest);
+		metadades.setDataObertura(new Date());
+		metadades.setClassificacio("organo1_PRO_123456789");
+		metadades.setEstat(ExpedientEstat.OBERT);
+		metadades.setInteressats(interessatsTest);
+		metadades.setSerieDocumental(SERIE_DOCUMENTAL);
+		expedientPerCrear.setMetadades(metadades);
+		String nomDoc = "ARXIUAPI_prova_doc_" + System.currentTimeMillis();
+		final Document documentPerCrear = new Document();
+		documentPerCrear.setNom(nomDoc);
+		documentPerCrear.setEstat(DocumentEstat.ESBORRANY);
+		final DocumentMetadades documentMetadades = new DocumentMetadades();
+		documentMetadades.setOrigen(ContingutOrigen.CIUTADA);
+		documentMetadades.setOrgans(organsTest);
+		documentMetadades.setDataCaptura(new Date());
+		documentMetadades.setEstatElaboracio(DocumentEstatElaboracio.ORIGINAL);
+		documentMetadades.setTipusDocumental(DocumentTipus.ALTRES);
+		documentMetadades.setFormat(DocumentFormat.OASIS12);
+		documentMetadades.setExtensio(DocumentExtensio.ODT);
+		documentPerCrear.setMetadades(documentMetadades);
+		DocumentContingut documentContingut = new DocumentContingut();
+		documentContingut.setContingut(
+				IOUtils.toByteArray(
+						getDocumentContingutEsborranyOdt()));
+		documentContingut.setTipusMime("application/vnd.oasis.opendocument.text");
+		documentPerCrear.setContingut(documentContingut);
+		String nomCar = "ARXIUAPI_prova_car_" + System.currentTimeMillis();
+		final Carpeta carpetaPerCrear = new Carpeta();
+		carpetaPerCrear.setNom(nomCar);
+		testCreantElements(
+				new TestAmbElementsCreats() {
+					@Override
+					public void executar(List<ContingutArxiu> elementsCreats) throws IOException {
+						ContingutArxiu expedientCreat = elementsCreats.get(0);
+						String expedientCreatId = expedientCreat.getIdentificador();
+						ContingutArxiu documentCreat = elementsCreats.get(1);
+						String documentCreatId = documentCreat.getIdentificador();
+						ContingutArxiu carpetaCreada = elementsCreats.get(2);
+						String carpetaCreadaId = carpetaCreada.getIdentificador();
+						System.out.println(
+								"1.- Guardant firma sense marcar el document com a definitiu (" +
+								"id=" + documentCreatId + ")... ");
+						Document documentPerModificar = new Document();
+						documentPerModificar.setIdentificador(documentCreatId);
+						Firma firmaPades = new Firma();
+						firmaPades.setTipus(FirmaTipus.PADES);
+						firmaPades.setPerfil(FirmaPerfil.EPES);
+						firmaPades.setTipusMime("application/pdf");
+						firmaPades.setContingut(
+								IOUtils.toByteArray(
+										getDocumentFirmaPdf()));
+						documentPerModificar.setFirmes(Arrays.asList(firmaPades));
+						DocumentMetadades documentMetadadesModificar = new DocumentMetadades();
+						documentMetadadesModificar.setFormat(DocumentFormat.PDF);
+						documentMetadadesModificar.setExtensio(DocumentExtensio.PDF);
+						documentPerModificar.setMetadades(documentMetadadesModificar);
+						documentPerModificar.setEstat(DocumentEstat.DEFINITIU);
+						//documentPerModificar.setEstat(DocumentEstat.ESBORRANY);
+						ContingutArxiu contingutModificat = arxiuPlugin.documentModificar(
+								documentPerModificar);
+						assertNotNull(contingutModificat);
+						System.out.println("Ok");
+						System.out.println(
+								"3.- Movent document a la carpeta creada (" +
+								"id=" + documentCreatId + ")... ");
+						arxiuPlugin.documentMoure(
+								documentCreatId,
+								carpetaCreadaId,
+								expedientCreatId);
+						System.out.println("Ok");
+						System.out.println(
+								"4.- Comprovant que el document està a dins la carpeta (" +
+								"documentId=" + documentCreatId + ", " +
+								"carpetaId=" + carpetaCreadaId + ")... ");
+						Carpeta carpetaDetalls = arxiuPlugin.carpetaDetalls(
+								carpetaCreadaId);
+						assertNotNull(carpetaDetalls.getContinguts());
+						assertEquals(carpetaDetalls.getContinguts().size(), 1);
+						ContingutArxiu contingutDocument = carpetaDetalls.getContinguts().get(0);
+						assertEquals(documentCreatId, contingutDocument.getIdentificador());
+						System.out.println("Ok");
+						System.out.println(
+								"5.- Modificant el nom del document a dins la carpeta (" +
+								"documentId=" + documentCreatId + ", " +
+								"carpetaId=" + carpetaCreadaId + ")... ");
+						Document documentPerModificar2 = new Document();
+						documentPerModificar2.setIdentificador(documentCreatId);
+						documentPerModificar2.setNom(documentPerCrear.getNom() + "_MOD");
+						ContingutArxiu documentModificat = arxiuPlugin.documentModificar(
+								documentPerModificar2);
+						assertNotNull(documentModificat);
+						assertEquals(documentPerCrear.getNom() + "_MOD", documentModificat.getNom());
+						System.out.println("Ok");
+					}
+				},
+				expedientPerCrear,
+				documentPerCrear,
+				carpetaPerCrear);
+	}*/
+
+	@Test
+	public void documentEsborranyDefinitiuSenseFirma() throws Exception {
+		System.out.println("TEST: DOCUMENT ESBORRANY SENSE FIRMA A DEFINITIU");
+		String nomExp = "ARXIUAPI_prova_exp_" + System.currentTimeMillis();
+		final Expedient expedientPerCrear = new Expedient();
+		expedientPerCrear.setNom(nomExp);
+		final ExpedientMetadades metadades = new ExpedientMetadades();
+		metadades.setOrgans(organsTest);
+		metadades.setDataObertura(new Date());
+		metadades.setClassificacio("organo1_PRO_123456789");
+		metadades.setEstat(ExpedientEstat.OBERT);
+		metadades.setInteressats(interessatsTest);
+		metadades.setSerieDocumental(SERIE_DOCUMENTAL);
+		expedientPerCrear.setMetadades(metadades);
+		String nomDoc = "ARXIUAPI_prova_doc_" + System.currentTimeMillis();
+		final Document documentPerCrear = new Document();
+		documentPerCrear.setNom(nomDoc);
+		documentPerCrear.setEstat(DocumentEstat.ESBORRANY);
+		final DocumentMetadades documentMetadades = new DocumentMetadades();
+		documentMetadades.setOrigen(ContingutOrigen.CIUTADA);
+		documentMetadades.setOrgans(organsTest);
+		documentMetadades.setDataCaptura(new Date());
+		documentMetadades.setEstatElaboracio(DocumentEstatElaboracio.ORIGINAL);
+		documentMetadades.setTipusDocumental(DocumentTipus.ALTRES);
+		documentMetadades.setFormat(DocumentFormat.OASIS12);
+		documentMetadades.setExtensio(DocumentExtensio.ODT);
+		documentPerCrear.setMetadades(documentMetadades);
+		DocumentContingut documentContingut = new DocumentContingut();
+		documentContingut.setContingut(
+				IOUtils.toByteArray(
+						getDocumentContingutEsborranyOdt()));
+		documentContingut.setTipusMime("application/vnd.oasis.opendocument.text");
+		documentPerCrear.setContingut(documentContingut);
+		testCreantElements(
+				new TestAmbElementsCreats() {
+					@Override
+					public void executar(List<ContingutArxiu> elementsCreats) throws IOException {
+						ContingutArxiu documentCreat = elementsCreats.get(1);
+						String documentCreatId = documentCreat.getIdentificador();
+						System.out.println(
+								"1.- Marcant el document com a definitiu (" +
+								"id=" + documentCreatId + ")... ");
+						Document documentPerModificar = new Document();
+						documentPerModificar.setIdentificador(documentCreatId);
+						documentPerModificar.setEstat(DocumentEstat.DEFINITIU);
+						ContingutArxiu contingutModificat = arxiuPlugin.documentModificar(
+								documentPerModificar);
+						assertNotNull(contingutModificat);
+						System.out.println("Ok");
+						System.out.println(
+								"2.- Comprovant el document definitiu (" +
+								"id=" + documentCreatId + ")... ");
+						Document documentDefinitiu = arxiuPlugin.documentDetalls(
+								documentCreatId,
+								null,
+								true);
+						assertNotNull(documentDefinitiu);
+						assertEquals(DocumentEstat.DEFINITIU, documentDefinitiu.getEstat());
+						System.out.println("Ok");
 					}
 				},
 				expedientPerCrear,

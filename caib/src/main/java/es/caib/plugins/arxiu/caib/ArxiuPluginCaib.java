@@ -561,7 +561,8 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 												null,
 												null,
 												null,
-												true));
+												true,
+												false));
 								param.setRetrieveNode(Boolean.TRUE.toString());
 								return param;
 							}
@@ -598,6 +599,7 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 												null,
 												csv,
 												getPropertyDefinicioCsv(),
+												true,
 												true));
 								param.setRetrieveNode(Boolean.TRUE.toString());
 								return param;
@@ -663,7 +665,8 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 												null,
 												csv,
 												getPropertyDefinicioCsv(),
-												false));
+												false,
+												true));
 								return param;
 							}
 						},
@@ -687,6 +690,7 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 												null,
 												null,
 												null,
+												false,
 												false));
 								return param;
 							}

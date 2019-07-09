@@ -122,7 +122,8 @@ public class ArxiuConversioHelper {
 			String aplicacioCodi,
 			String csv,
 			String csvDef,
-			boolean creacio) throws ArxiuException {
+			boolean creacio,
+			boolean definitiu) throws ArxiuException {
 		DocumentNode node = new DocumentNode();
 		node.setId(document.getIdentificador());
 		node.setName(
@@ -138,7 +139,8 @@ public class ArxiuConversioHelper {
 						aplicacioCodi,
 						metadadesPrevies,
 						csv,
-						csvDef));
+						csvDef,
+						definitiu));
 		node.setAspects(
 				generarAspectes(aspectesPrevis, creacio));
 		return node;
@@ -387,7 +389,8 @@ public class ArxiuConversioHelper {
 			String aplicacioCodi,
 			List<Metadata> metadadesPrevies,
 			String csv,
-			String csvDef) throws ArxiuException {
+			String csvDef,
+			boolean definitiu) throws ArxiuException {
 		List<Metadata> metadades = new ArrayList<Metadata>();
 		if (metadadesPrevies != null) {
 			metadades.addAll(metadadesPrevies);
@@ -446,7 +449,7 @@ public class ArxiuConversioHelper {
 		if (firmes != null) {
 			boolean tipusFirmaConfigurat = false;
 			for (Firma firma: firmes) {
-				if (FirmaTipus.CSV.equals(firma.getTipus())) {
+				if (FirmaTipus.CSV.equals(firma.getTipus()) && firma.getContingut() != null) {
 					if (firma.getContingut() != null) {
 						addMetadata(
 								metadades,
@@ -470,6 +473,15 @@ public class ArxiuConversioHelper {
 					tipusFirmaConfigurat = true;
 				}
 			}
+		} else if (definitiu) {
+			addMetadata(
+					metadades,
+					MetadatosDocumento.TIPO_FIRMA,
+					FirmaTipus.CSV.toString());
+			addMetadata(
+					metadades,
+					MetadatosDocumento.PERFIL_FIRMA,
+					FirmaPerfil.A.toString());
 		}
 		if (!firmaCsvConfigurada) {
 			addMetadata(metadades, MetadatosDocumento.CSV, csv);
