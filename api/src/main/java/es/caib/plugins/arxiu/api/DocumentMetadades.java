@@ -27,6 +27,7 @@ public class DocumentMetadades {
 	private String identificadorOrigen;
 	private Map<String, Object> metadadesAddicionals;
 	String serieDocumental;
+	private String tipusDocumentalAddicional;
 	
 	public String getSerieDocumental() {
 		return serieDocumental;
@@ -100,7 +101,13 @@ public class DocumentMetadades {
 	public void setMetadadesAddicionals(Map<String, Object> metadadesAddicionals) {
 		this.metadadesAddicionals = metadadesAddicionals;
 	}
-
+	public String getTipusDocumentalAddicional() {
+		return tipusDocumentalAddicional;
+	}
+	public void setTipusDocumentalAddicional(String tipusDocumentalAddicional) {
+		this.tipusDocumentalAddicional = tipusDocumentalAddicional;
+	}
+	
 	public Object getMetadadaAddicional(String clau) {
 		if (metadadesAddicionals == null) {
 			return null;
