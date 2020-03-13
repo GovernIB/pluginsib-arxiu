@@ -12,3 +12,5 @@
 /filesystem/target
 /.project
 /target
+/.idea
+*.iml
