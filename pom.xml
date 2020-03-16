@@ -12,7 +12,6 @@
 		<maven.compiler.source>1.6</maven.compiler.source>
 		<maven.compiler.target>1.6</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<skip.tests>true</skip.tests>
 	</properties>
 	<modules>
 		<module>api</module>
@@ -20,6 +19,7 @@
 	</modules>
 	<profiles>
 		<profile>
+			<id>java7</id>
 			<activation>
 				<jdk>[1.7,)</jdk>
 			</activation>
@@ -33,12 +33,6 @@
 			<groupId>org.fundaciobit.pluginsib.core</groupId>
 			<artifactId>pluginsib-core</artifactId>
 			<version>2.0.0</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.2</version>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
@@ -85,15 +79,6 @@
 					<artifactId>maven-resources-plugin</artifactId>
 					<configuration>
 						<encoding>UTF-8</encoding>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-idea-plugin</artifactId>
-					<configuration>
-						<jdkName>JDK1.6</jdkName>
-						<downloadSources>true</downloadSources>
-						<downloadJavadocs>true</downloadJavadocs>
 					</configuration>
 				</plugin>
 			</plugins>
