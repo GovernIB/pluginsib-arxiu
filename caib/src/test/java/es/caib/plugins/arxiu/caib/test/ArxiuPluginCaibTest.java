@@ -1,6 +1,3 @@
-/**
- * 
- */
 package es.caib.plugins.arxiu.caib.test;
 
 import static org.junit.Assert.assertEquals;
@@ -67,7 +64,7 @@ public class ArxiuPluginCaibTest {
 	private static IArxiuPlugin arxiuPlugin;
 
 	@BeforeClass
-	public static void setUp() throws IOException {
+	public static void setUp() {
 		try {
 			Properties properties = new Properties();
 			properties.load(
@@ -1301,6 +1298,8 @@ public class ArxiuPluginCaibTest {
 				new TestAmbElementsCreats() {
 					@Override
 					public void executar(List<ContingutArxiu> elementsCreats) throws IOException {
+						ContingutArxiu expedientCreat = elementsCreats.get(0);
+						String expedientCreatId = expedientCreat.getIdentificador();
 						ContingutArxiu documentCreat = elementsCreats.get(1);
 						String documentCreatId = documentCreat.getIdentificador();
 						ContingutArxiu carpetaCreada = elementsCreats.get(2);
@@ -1311,7 +1310,8 @@ public class ArxiuPluginCaibTest {
 								"carpetaId=" + carpetaCreadaId + ")... ");
 						arxiuPlugin.documentMoure(
 								documentCreatId,
-								carpetaCreadaId);
+								carpetaCreadaId,
+								expedientCreatId);
 						System.out.println("Ok");
 						System.out.println(
 								"2.- Comprovant que el document està a dins la carpeta (" +
