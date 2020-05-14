@@ -1705,5 +1705,13 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 	protected String getPropertyBase() {
 		return ARXIUCAIB_BASE_PROPERTY;
 	}
+	
+  @Override
+  public String getCsvGenerationDefinition(String identificadorDoc) throws ArxiuException {
+
+    String csvGenerationDefinitionEL = getPropertyDefinicioCsv();
+
+    return processExpressionLanguage(identificadorDoc, csvGenerationDefinitionEL);
+  }
 
 }

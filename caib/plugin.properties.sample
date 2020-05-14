@@ -17,6 +17,6 @@ plugin.arxiu.caib.conversio.imprimible.contrasenya=PASSWD
 
 #plugin.arxiu.caib.csv_validation_web_EL=http://localhost:28080/concsv/
 
-#plugin.arxiu.caib.csv_generation_definition=http://localhost:28080/concsv/csv_generation_definition.pdf
+#plugin.arxiu.caib.csv.definicio=http://localhost:28080/concsv/csv_generation_definition.pdf
 
 #plugin.arxiu.caib.validation_file_url_EL=http://localhost:28080/concsv/web/validationfile/${uuid}

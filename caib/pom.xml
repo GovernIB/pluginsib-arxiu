@@ -8,6 +8,7 @@
 	</parent>
 	<artifactId>pluginsib-arxiu-caib</artifactId>
 	<name>PluginsIB - Arxiu - CAIB</name>
+    <version>2.0.4</version>
 	<dependencies>
 		<dependency>
 			<groupId>org.fundaciobit.pluginsib.arxiu</groupId>
