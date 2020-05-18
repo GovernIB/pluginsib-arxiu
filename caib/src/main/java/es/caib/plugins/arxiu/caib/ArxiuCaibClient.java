@@ -51,8 +51,8 @@ public class ArxiuCaibClient {
 
 	private Client jerseyClient;
 	private ObjectMapper mapper;
-
-
+	
+	private boolean debug;
 
 	public ArxiuCaibClient(
 			String url,
@@ -62,7 +62,8 @@ public class ArxiuCaibClient {
 			String usuariSgd,
 			String contrasenyaSgd,
 			int timeoutConnect,
-			int timeoutRead) {
+			int timeoutRead,
+			boolean debug) {
 		super();
 		if (url.endsWith("/")) {
 			this.url = url.substring(0, url.length() - 1);
@@ -93,7 +94,8 @@ public class ArxiuCaibClient {
 			String usuariSgd,
 			String contrasenyaSgd,
 			int timeoutConnect,
-			int timeoutRead) {
+			int timeoutRead,
+			boolean debug) {
 		this(
 				url,
 				aplicacioCodi,
@@ -102,7 +104,7 @@ public class ArxiuCaibClient {
 				usuariSgd,
 				contrasenyaSgd,
 				timeoutConnect,
-				timeoutRead);
+				timeoutRead, debug);
 	}
 
 
@@ -112,7 +114,8 @@ public class ArxiuCaibClient {
 			Class<T> peticioType,
 			GeneradorParam<U> generador,
 			Class<U> paramType,
-			Class<V> respostaType) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, UniformInterfaceException, ClientHandlerException, IOException {
+			Class<V> respostaType)
+			     throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, UniformInterfaceException, ClientHandlerException, IOException {
 		Request<U> request = new Request<U>();
 		Capsalera capsalera = generarCapsalera();
 		request.setServiceHeader(
@@ -256,16 +259,16 @@ public class ArxiuCaibClient {
 		String body = mapper.writeValueAsString(peticio);
 		logger.info("Enviant petició HTTP a l'arxiu (" +
 				"url=" + urlAmbMetode + ", " +
-				"tipus=application/json, " +
-				"body=" + body + ")");
+				"tipus=application/json " + (debug? (", body=" + body) : "" )
+				 + ")");
 		ClientResponse response = jerseyClient.
 				resource(urlAmbMetode).
 				type("application/json").
 				post(ClientResponse.class, body);
 		String json = response.getEntity(String.class);
-		logger.info("Rebuda resposta HTTP de l'arxiu (" +
-				"status=" + response.getStatus() + ", " +
-				"body=" + json + ")");
+		logger.info("Rebuda resposta HTTP de l'arxiu ("
+				+ "status=" + response.getStatus() 
+				+ (debug? (", " + "body=" + json): "") + ")");
 		return new JerseyResponse(
 				json,
 				response.getStatus());

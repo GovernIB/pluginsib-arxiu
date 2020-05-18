@@ -8,6 +8,9 @@ plugin.arxiu.caib.conversio.imprimible.url=http://localhost:28080/concsv/rest/pr
 plugin.arxiu.caib.conversio.imprimible.usuari=USUARI
 plugin.arxiu.caib.conversio.imprimible.contrasenya=PASSWD
 
+# Si val true imprimeix el contingut de l'enviament i resposta json
+# Per defecte false
+# plugin.arxiu.caib.debug=false
 
 #plugin.arxiu.caib.original_file_url_EL=http://localhost:28080/concsv/rest/original/uuid/${uuid}
 

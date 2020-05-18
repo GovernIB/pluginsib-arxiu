@@ -1629,7 +1629,7 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 					getPropertyUsuari(),
 					getPropertyContrasenya(),
 					getPropertyTimeoutConnect(),
-					getPropertyTimeoutRead());
+					getPropertyTimeoutRead(), isDebug());
 		}
 		return arxiuClient;
 	}
@@ -1674,6 +1674,12 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 	private String getPropertyConversioImprimibleContrasenya() {
 		return getProperty(ARXIUCAIB_BASE_PROPERTY + "conversio.imprimible.contrasenya");
 	}
+	
+	private boolean isDebug() {
+	  return "true".equals(getProperty(ARXIUCAIB_BASE_PROPERTY + "debug"));
+	}
+	
+	
 	private int getPropertyTimeoutConnect() {
 		String timeout = getProperty(
 				ARXIUCAIB_BASE_PROPERTY + "timeout.connect",
