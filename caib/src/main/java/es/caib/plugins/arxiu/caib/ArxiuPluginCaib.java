@@ -437,7 +437,7 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 	}
 
 	@Override
-	public void expedientTancar(
+	public String expedientTancar(
 			final String identificador) throws ArxiuException {
 		String metode = Servicios.CLOSE_FILE;
 		try {
@@ -461,6 +461,7 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 					"S'ha produit un error cridant el mètode " + metode,
 					ex);
 		}
+		return null;
 	}
 
 	@Override

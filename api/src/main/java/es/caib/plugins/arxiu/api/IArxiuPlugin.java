@@ -120,7 +120,7 @@ public interface IArxiuPlugin extends IPlugin {
 	 * @throws ArxiuException
 	 *             Si es produeix algun problema al realitzar l’operació amb l’arxiu.
 	 */
-	public void expedientTancar(
+	public String expedientTancar(
 			String identificador) throws ArxiuException;
 
 	/**
