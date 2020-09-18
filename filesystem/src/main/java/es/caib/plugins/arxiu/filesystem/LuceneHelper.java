@@ -98,8 +98,8 @@ public class LuceneHelper {
 	private static final String LUCENE_FIELD_FIRMA_MIME = "firma_mime";
 
 	//private FSDirectory luceneDirectory;
-	private Analyzer luceneAnalyzer;
-	private IndexWriter luceneWriter;
+	private static Analyzer luceneAnalyzer;
+	private static IndexWriter luceneWriter;
 	//private IndexReader luceneReader;
 	//private IndexSearcher luceneSearcher;
 
@@ -532,7 +532,12 @@ public class LuceneHelper {
 		return doc.get(LUCENE_FIELD_META_ID);
 	}
 
-
+	public static void closeLuceneWriter() throws IOException {
+		if (luceneAnalyzer != null)
+			luceneAnalyzer.close();
+		if (luceneWriter != null)
+			luceneWriter.close();
+	}
 
 	private Document modificarLuceneDocument(
 			Document docOriginal,
