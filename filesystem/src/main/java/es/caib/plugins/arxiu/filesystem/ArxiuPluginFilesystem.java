@@ -32,7 +32,6 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 
 	private static final String ARXIUFILESYSTEM_BASE_PROPERTY = ARXIU_BASE_PROPERTY + "filesystem.";
 
-	private LuceneHelper luceneHelper;
 	private FileSystemHelper filesystemHelper;
 
 	public ArxiuPluginFilesystem() {
@@ -52,6 +51,7 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 	public ContingutArxiu expedientCrear(
 			Expedient expedient) throws ArxiuException {
 		try {
+			LuceneHelper luceneHelper = getLuceneHelper();
 			String uuid = UUID.randomUUID().toString();
 			String identificadorEni = generarIdentificadorEni(
 					uuid,
@@ -59,7 +59,7 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			String path = getFilesystemHelper().expedientCrear(
 					expedient,
 					identificadorEni);
-			getLuceneHelper().expedientCrear(
+			luceneHelper.expedientCrear(
 					expedient,
 					uuid,
 					identificadorEni,
@@ -75,6 +75,14 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			throw new ArxiuException(
 					"Error creant l'expedient: " + ex.getMessage(),
 					ex);
+		} finally {
+			try {
+				LuceneHelper.closeLuceneWriter();
+			} catch (IOException ex) {
+				throw new ArxiuException(
+						"No s'ha pogut tancar l'índex de lucene writer" + ex.getMessage(),
+						ex);
+			}
 		}
 	}
 
@@ -82,11 +90,12 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 	public ContingutArxiu expedientModificar(
 			Expedient expedient) throws ArxiuException {
 		try {
+			LuceneHelper luceneHelper = getLuceneHelper();
 			comprovarExpedientEstat(
 					ExpedientEstat.OBERT,
-					getLuceneHelper().getExpedientPareEstat(
+					luceneHelper.getExpedientPareEstat(
 							expedient.getIdentificador()));
-			getLuceneHelper().expedientModificar(
+			luceneHelper.expedientModificar(
 					expedient);
 			return crearContingutArxiu(
 					expedient.getIdentificador(), 
@@ -99,6 +108,14 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			throw new ArxiuException(
 					"Error modificant l'expedient: " + ex.getMessage(),
 					ex);
+		} finally {
+			try {
+				LuceneHelper.closeLuceneWriter();
+			} catch (IOException ex) {
+				throw new ArxiuException(
+						"No s'ha pogut tancar l'índex de lucene writer" + ex.getMessage(),
+						ex);
+			}
 		}
 	}
 
@@ -106,16 +123,18 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 	public void expedientEsborrar(
 			String identificador) throws ArxiuException {
 		try {
+			LuceneHelper luceneHelper = getLuceneHelper();
 			comprovarExpedientEstat(
 					ExpedientEstat.OBERT,
-					getLuceneHelper().getExpedientPareEstat(
+					luceneHelper.getExpedientPareEstat(
 							identificador));
 			comprovarExpedientNoConteDocumentsDefinitius(
-					identificador);
-			String path = getLuceneHelper().getPath(
+					identificador,
+					luceneHelper);
+			String path = luceneHelper.getPath(
 					identificador);
 			getFilesystemHelper().directoriEsborrar(path);
-			getLuceneHelper().contingutEsborrar(
+			luceneHelper.contingutEsborrar(
 					identificador);
 		} catch (ArxiuException aex) {
 			throw aex;
@@ -123,6 +142,14 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			throw new ArxiuException(
 					"Error esborrant l'expedient: " + ex.getMessage(),
 					ex);
+		} finally {
+			try {
+				LuceneHelper.closeLuceneWriter();
+			} catch (IOException ex) {
+				throw new ArxiuException(
+						"No s'ha pogut tancar l'índex de lucene writer" + ex.getMessage(),
+						ex);
+			}
 		}
 	}
 
@@ -131,17 +158,26 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			String identificador,
 			String versio) throws ArxiuException {
 		try {
+			LuceneHelper luceneHelper = getLuceneHelper();
 			if (versio != null) {
 				throw new ArxiuException(
 						"Aquesta implementació de l'API d'arxiu no suporta el versionat d'expedients");
 			}
-			return getLuceneHelper().expedientDetalls(identificador);
+			return luceneHelper.expedientDetalls(identificador);
 		} catch (ArxiuException aex) {
 			throw aex;
 		} catch (Exception ex) {
 			throw new ArxiuException(
 					"Error al obtenir els detalls de l'expedient: " + ex.getMessage(),
 					ex);
+		} finally {
+			try {
+				LuceneHelper.closeLuceneWriter();
+			} catch (IOException ex) {
+				throw new ArxiuException(
+						"No s'ha pogut tancar l'índex de lucene writer" + ex.getMessage(),
+						ex);
+			}
 		}
 	}
 
@@ -151,7 +187,8 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			Integer pagina,
 			Integer itemsPerPagina) throws ArxiuException {
 		try {
-			return getLuceneHelper().contingutCercar(
+			LuceneHelper luceneHelper = getLuceneHelper();
+			return luceneHelper.contingutCercar(
 					ContingutTipus.EXPEDIENT,
 					filtres,
 					pagina,
@@ -162,6 +199,14 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			throw new ArxiuException(
 					"Error en la consulta d'expedients: " + ex.getMessage(),
 					ex);
+		} finally {
+			try {
+				LuceneHelper.closeLuceneWriter();
+			} catch (IOException ex) {
+				throw new ArxiuException(
+						"No s'ha pogut tancar l'índex de lucene writer" + ex.getMessage(),
+						ex);
+			}
 		}
 	}
 
@@ -170,20 +215,21 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			final Expedient expedient, 
 			final String identificadorPare) throws ArxiuException {
 		try {
+			LuceneHelper luceneHelper = getLuceneHelper();
 			comprovarExpedientEstat(
 					ExpedientEstat.OBERT,
-					getLuceneHelper().getExpedientPareEstat(
+					luceneHelper.getExpedientPareEstat(
 							identificadorPare));
 			String uuid = UUID.randomUUID().toString();
 			String identificadorEni = generarIdentificadorEni(
 					uuid,
 					true);
-			String parePath = getLuceneHelper().getPath(
+			String parePath = luceneHelper.getPath(
 					identificadorPare);
 			String path = getFilesystemHelper().subExpedientCrear(
 					parePath,
 					identificadorEni);
-			getLuceneHelper().expedientCrear(
+			luceneHelper.expedientCrear(
 					expedient,
 					uuid,
 					identificadorEni,
@@ -199,6 +245,14 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			throw new ArxiuException(
 					"Error creant el subexpedient: " + ex.getMessage(),
 					ex);
+		} finally {
+			try {
+				LuceneHelper.closeLuceneWriter();
+			} catch (IOException ex) {
+				throw new ArxiuException(
+						"No s'ha pogut tancar l'índex de lucene writer" + ex.getMessage(),
+						ex);
+			}
 		}
 	}
 
@@ -213,11 +267,12 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 	public void expedientTancar(
 			String identificador) throws ArxiuException {
 		try {
+			LuceneHelper luceneHelper = getLuceneHelper();
 			comprovarExpedientEstat(
 					ExpedientEstat.OBERT,
-					getLuceneHelper().getExpedientPareEstat(
+					luceneHelper.getExpedientPareEstat(
 							identificador));
-			getLuceneHelper().expedientCanviEstat(
+			luceneHelper.expedientCanviEstat(
 					identificador,
 					ExpedientEstat.TANCAT);
 		} catch (ArxiuException aex) {
@@ -226,6 +281,14 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			throw new ArxiuException(
 					"Error tancant l'expedient: " + ex.getMessage(),
 					ex);
+		} finally {
+			try {
+				LuceneHelper.closeLuceneWriter();
+			} catch (IOException ex) {
+				throw new ArxiuException(
+						"No s'ha pogut tancar l'índex de lucene writer" + ex.getMessage(),
+						ex);
+			}
 		}
 	}
 
@@ -233,11 +296,12 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 	public void expedientReobrir(
 			String identificador) throws ArxiuException {
 		try {
+			LuceneHelper luceneHelper = getLuceneHelper();
 			comprovarExpedientEstat(
 					ExpedientEstat.TANCAT,
-					getLuceneHelper().getExpedientPareEstat(
+					luceneHelper.getExpedientPareEstat(
 							identificador));
-			getLuceneHelper().expedientCanviEstat(
+			luceneHelper.expedientCanviEstat(
 					identificador,
 					ExpedientEstat.OBERT);
 		} catch (ArxiuException aex) {
@@ -246,6 +310,14 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			throw new ArxiuException(
 					"Error reobrint l'expedient: " + ex.getMessage(),
 					ex);
+		} finally {
+			try {
+				LuceneHelper.closeLuceneWriter();
+			} catch (IOException ex) {
+				throw new ArxiuException(
+						"No s'ha pogut tancar l'índex de lucene writer" + ex.getMessage(),
+						ex);
+			}
 		}
 	}
 
@@ -261,20 +333,21 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			Document document,
 			String identificadorPare) throws ArxiuException {
 		try {
+			LuceneHelper luceneHelper = getLuceneHelper();
 			comprovarExpedientEstat(
 					ExpedientEstat.OBERT,
-					getLuceneHelper().getExpedientPareEstat(
+					luceneHelper.getExpedientPareEstat(
 							identificadorPare));
 			String uuid = UUID.randomUUID().toString();
 			String identificadorEni = generarIdentificadorEni(
 					uuid,
 					false);
-			String parePath = getLuceneHelper().getPath(identificadorPare);
+			String parePath = luceneHelper.getPath(identificadorPare);
 			String path = getFilesystemHelper().documentActualitzar(
 					parePath,
 					document,
 					identificadorEni);
-			getLuceneHelper().documentCrear(
+			luceneHelper.documentCrear(
 					document,
 					uuid,
 					identificadorPare,
@@ -291,6 +364,14 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			throw new ArxiuException(
 					"Error creant el document: " + ex.getMessage(),
 					ex);
+		} finally {
+			try {
+				LuceneHelper.closeLuceneWriter();
+			} catch (IOException ex) {
+				throw new ArxiuException(
+						"No s'ha pogut tancar l'índex de lucene writer" + ex.getMessage(),
+						ex);
+			}
 		}
 	}
 
@@ -298,25 +379,26 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 	public ContingutArxiu documentModificar(
 			Document document) throws ArxiuException {
 		try {
+			LuceneHelper luceneHelper = getLuceneHelper();
 			comprovarExpedientEstat(
 					ExpedientEstat.OBERT,
-					getLuceneHelper().getExpedientPareEstat(
+					luceneHelper.getExpedientPareEstat(
 							document.getIdentificador()));
 			comprovarDocumentEstat(
 					DocumentEstat.ESBORRANY,
-					getLuceneHelper().getDocumentEstat(
+					luceneHelper.getDocumentEstat(
 							document.getIdentificador()));
-			comprovarDocumentDefinitiuAmbFirmes(document);
-			String parePath = getLuceneHelper().getParePath(
+			comprovarDocumentDefinitiuAmbFirmes(document, luceneHelper);
+			String parePath = luceneHelper.getParePath(
 					ContingutTipus.DOCUMENT,
 					document.getIdentificador());
-			String identificadorEni = getLuceneHelper().getIdentificadorEni(
+			String identificadorEni = luceneHelper.getIdentificadorEni(
 					document.getIdentificador());
 			getFilesystemHelper().documentActualitzar(
 					parePath,
 					document,
 					identificadorEni);
-			getLuceneHelper().documentModificar(
+			luceneHelper.documentModificar(
 					document);
 			return crearContingutArxiu(
 					document.getIdentificador(), 
@@ -329,6 +411,14 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			throw new ArxiuException(
 					"Error modificant el document: " + ex.getMessage(),
 					ex);
+		} finally {
+			try {
+				LuceneHelper.closeLuceneWriter();
+			} catch (IOException ex) {
+				throw new ArxiuException(
+						"No s'ha pogut tancar l'índex de lucene writer" + ex.getMessage(),
+						ex);
+			}
 		}
 	}
 
@@ -336,17 +426,18 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 	public void documentEsborrar(
 			String identificador) throws ArxiuException {
 		try {
+			LuceneHelper luceneHelper = getLuceneHelper();
 			comprovarExpedientEstat(
 					ExpedientEstat.OBERT,
-					getLuceneHelper().getExpedientPareEstat(
+					luceneHelper.getExpedientPareEstat(
 							identificador));
 			comprovarDocumentEstat(
 					DocumentEstat.ESBORRANY,
-					getLuceneHelper().getDocumentEstat(
+					luceneHelper.getDocumentEstat(
 							identificador));
-			String path = getLuceneHelper().getPath(identificador);
+			String path = luceneHelper.getPath(identificador);
 			getFilesystemHelper().directoriEsborrar(path);
-			getLuceneHelper().contingutEsborrar(
+			luceneHelper.contingutEsborrar(
 					identificador);
 		} catch (ArxiuException aex) {
 			throw aex;
@@ -354,6 +445,14 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			throw new ArxiuException(
 					"Error esborrant l'expedient: " + ex.getMessage(),
 					ex);
+		} finally {
+			try {
+				LuceneHelper.closeLuceneWriter();
+			} catch (IOException ex) {
+				throw new ArxiuException(
+						"No s'ha pogut tancar l'índex de lucene writer" + ex.getMessage(),
+						ex);
+			}
 		}
 	}
 
@@ -367,22 +466,30 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 				throw new ArxiuException(
 						"Aquesta implementació de l'API d'arxiu no suporta el versionat de documents");
 			}
-			Document document = getLuceneHelper().documentDetalls(identificador);
+			LuceneHelper luceneHelper = getLuceneHelper();
+			Document document = luceneHelper.documentDetalls(identificador);
 			if (ambContingut && document.getContingut() != null) {
-				String path = getLuceneHelper().getPath(identificador);
+				String path = luceneHelper.getPath(identificador);
 				document.getContingut().setContingut(
 						getFilesystemHelper().documentContingut(path));
 				document.getContingut().setTamany(
 						document.getContingut().getContingut().length);
+			} else if (ambContingut) {
+				String path = luceneHelper.getPath(identificador);
+				DocumentContingut contingut = new DocumentContingut();
+				byte[] content = getFilesystemHelper().documentContingut(path) != null ? getFilesystemHelper().documentContingut(path) : getFilesystemHelper().documentFirma(path,0);
+				contingut.setContingut(content);
+				if (getFilesystemHelper().documentContingut(path) != null)
+					contingut.setTamany(getFilesystemHelper().documentContingut(path).length);
+				contingut.setTipusMime("application/pdf");
+				document.setContingut(contingut);
 			}
 			if (document.getFirmes() != null) {
-				String path = getLuceneHelper().getPath(identificador);
+				String path = luceneHelper.getPath(identificador);
 				for (int i = 0; i < document.getFirmes().size(); i++) {
 					Firma firma = document.getFirmes().get(i);
-					firma.setContingut(
-							getFilesystemHelper().documentFirma(
-									path,
-									i));
+					byte[] content = getFilesystemHelper().documentFirma(path, i) != null ? getFilesystemHelper().documentFirma(path, i) : getFilesystemHelper().documentContingut(path);
+					firma.setContingut(content);
 					firma.setTamany(firma.getContingut().length);
 				}
 			}
@@ -393,6 +500,14 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			throw new ArxiuException(
 					"Error al obtenir els detalls del document: " + ex.getMessage(),
 					ex);
+		} finally {
+			try {
+				LuceneHelper.closeLuceneWriter();
+			} catch (IOException ex) {
+				throw new ArxiuException(
+						"No s'ha pogut tancar l'índex de lucene writer" + ex.getMessage(),
+						ex);
+			}
 		}
 	}
 
@@ -403,7 +518,8 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			Integer itemsPerPagina,
 			final DocumentRepositori repositori) throws ArxiuException {
 		try {
-			return getLuceneHelper().contingutCercar(
+			LuceneHelper luceneHelper = getLuceneHelper();
+			return luceneHelper.contingutCercar(
 					ContingutTipus.DOCUMENT,
 					filtres,
 					pagina,
@@ -414,6 +530,14 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			throw new ArxiuException(
 					"Error en la consulta d'expedients: " + ex.getMessage(),
 					ex);
+		} finally {
+			try {
+				LuceneHelper.closeLuceneWriter();
+			} catch (IOException ex) {
+				throw new ArxiuException(
+						"No s'ha pogut tancar l'índex de lucene writer" + ex.getMessage(),
+						ex);
+			}
 		}
 	}
 
@@ -429,21 +553,22 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			String identificador,
 			String identificadorDesti) throws ArxiuException {
 		try {
-			Document document = getLuceneHelper().documentDetalls(identificador);
+			LuceneHelper luceneHelper = getLuceneHelper();
+			Document document = luceneHelper.documentDetalls(identificador);
 			comprovarExpedientEstat(
 					ExpedientEstat.OBERT,
-					getLuceneHelper().getExpedientPareEstat(
+					luceneHelper.getExpedientPareEstat(
 							identificadorDesti));
 			String uuid = UUID.randomUUID().toString();
 			String identificadorEni = generarIdentificadorEni(
 					uuid,
 					false);
-			String parePath = getLuceneHelper().getPath(identificadorDesti);
+			String parePath = luceneHelper.getPath(identificadorDesti);
 			String path = getFilesystemHelper().documentActualitzar(
 					parePath,
 					document,
 					identificadorEni);
-			getLuceneHelper().documentCrear(
+			luceneHelper.documentCrear(
 					document,
 					uuid,
 					identificadorDesti,
@@ -460,6 +585,14 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			throw new ArxiuException(
 					"Error al copiar el document: " + ex.getMessage(),
 					ex);
+		} finally {
+			try {
+				LuceneHelper.closeLuceneWriter();
+			} catch (IOException ex) {
+				throw new ArxiuException(
+						"No s'ha pogut tancar l'índex de lucene writer" + ex.getMessage(),
+						ex);
+			}
 		}
 	}
 
@@ -478,9 +611,10 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			String identificadorDesti,
 			String identificadorExpedientDesti) throws ArxiuException {
 		try {
-			String origenPath = getLuceneHelper().getPath(identificador);
-			String destiPath = getLuceneHelper().getPath(identificadorDesti);
-			getLuceneHelper().contingutMoure(
+			LuceneHelper luceneHelper = getLuceneHelper();
+			String origenPath = luceneHelper.getPath(identificador);
+			String destiPath = luceneHelper.getPath(identificadorDesti);
+			luceneHelper.contingutMoure(
 					ContingutTipus.DOCUMENT,
 					identificador,
 					identificadorDesti,
@@ -495,6 +629,14 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			throw new ArxiuException(
 					"Error al moure el document: " + ex.getMessage(),
 					ex);
+		} finally {
+			try {
+				LuceneHelper.closeLuceneWriter();
+			} catch (IOException ex) {
+				throw new ArxiuException(
+						"No s'ha pogut tancar l'índex de lucene writer" + ex.getMessage(),
+						ex);
+			}
 		}
 	}
 
@@ -516,16 +658,17 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			Carpeta carpeta,
 			String identificadorPare) throws ArxiuException {
 		try {
+			LuceneHelper luceneHelper = getLuceneHelper();
 			comprovarExpedientEstat(
 					ExpedientEstat.OBERT,
-					getLuceneHelper().getExpedientPareEstat(
+					luceneHelper.getExpedientPareEstat(
 							identificadorPare));
 			String uuid = UUID.randomUUID().toString();
-			String parePath = getLuceneHelper().getPath(identificadorPare);
+			String parePath = luceneHelper.getPath(identificadorPare);
 			String path = getFilesystemHelper().carpetaCrear(
 					parePath,
 					uuid);
-			getLuceneHelper().carpetaCrear(
+			luceneHelper.carpetaCrear(
 					carpeta,
 					uuid,
 					identificadorPare,
@@ -541,6 +684,14 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			throw new ArxiuException(
 					"Error creant la carpeta: " + ex.getMessage(),
 					ex);
+		} finally {
+			try {
+				LuceneHelper.closeLuceneWriter();
+			} catch (IOException ex) {
+				throw new ArxiuException(
+						"No s'ha pogut tancar l'índex de lucene writer" + ex.getMessage(),
+						ex);
+			}
 		}
 	}
 
@@ -548,11 +699,12 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 	public ContingutArxiu carpetaModificar(
 			Carpeta carpeta) throws ArxiuException {
 		try {
+			LuceneHelper luceneHelper = getLuceneHelper();
 			comprovarExpedientEstat(
 					ExpedientEstat.OBERT,
-					getLuceneHelper().getExpedientPareEstat(
+					luceneHelper.getExpedientPareEstat(
 							carpeta.getIdentificador()));
-			getLuceneHelper().carpetaModificar(
+			luceneHelper.carpetaModificar(
 					carpeta);
 			return crearContingutArxiu(
 					carpeta.getIdentificador(), 
@@ -565,6 +717,14 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			throw new ArxiuException(
 					"Error modificant la carpeta: " + ex.getMessage(),
 					ex);
+		} finally {
+			try {
+				LuceneHelper.closeLuceneWriter();
+			} catch (IOException ex) {
+				throw new ArxiuException(
+						"No s'ha pogut tancar l'índex de lucene writer" + ex.getMessage(),
+						ex);
+			}
 		}
 	}
 
@@ -572,13 +732,14 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 	public void carpetaEsborrar(
 			String identificador) throws ArxiuException {
 		try {
+			LuceneHelper luceneHelper = getLuceneHelper();
 			comprovarExpedientEstat(
 					ExpedientEstat.OBERT,
-					getLuceneHelper().getExpedientPareEstat(
+					luceneHelper.getExpedientPareEstat(
 							identificador));
-			String path = getLuceneHelper().getPath(identificador);
+			String path = luceneHelper.getPath(identificador);
 			getFilesystemHelper().directoriEsborrar(path);
-			getLuceneHelper().contingutEsborrar(
+			luceneHelper.contingutEsborrar(
 					identificador);
 		} catch (ArxiuException aex) {
 			throw aex;
@@ -586,6 +747,14 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			throw new ArxiuException(
 					"Error esborrant la carpeta: " + ex.getMessage(),
 					ex);
+		} finally {
+			try {
+				LuceneHelper.closeLuceneWriter();
+			} catch (IOException ex) {
+				throw new ArxiuException(
+						"No s'ha pogut tancar l'índex de lucene writer" + ex.getMessage(),
+						ex);
+			}
 		}
 	}
 
@@ -593,13 +762,22 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 	public Carpeta carpetaDetalls(
 			String identificador) throws ArxiuException {
 		try {
-			return getLuceneHelper().carpetaDetalls(identificador);
+			LuceneHelper luceneHelper = getLuceneHelper();
+			return luceneHelper.carpetaDetalls(identificador);
 		} catch (ArxiuException aex) {
 			throw aex;
 		} catch (Exception ex) {
 			throw new ArxiuException(
 					"Error al obtenir els detalls de l'expedient: " + ex.getMessage(),
 					ex);
+		} finally {
+			try {
+				LuceneHelper.closeLuceneWriter();
+			} catch (IOException ex) {
+				throw new ArxiuException(
+						"No s'ha pogut tancar l'índex de lucene writer" + ex.getMessage(),
+						ex);
+			}
 		}
 	}
 
@@ -608,17 +786,18 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			String identificador,
 			String identificadorDesti) throws ArxiuException {
 		try {
-			Carpeta carpeta = getLuceneHelper().carpetaDetalls(identificador);
+			LuceneHelper luceneHelper = getLuceneHelper();
+			Carpeta carpeta = luceneHelper.carpetaDetalls(identificador);
 			comprovarExpedientEstat(
 					ExpedientEstat.OBERT,
-					getLuceneHelper().getExpedientPareEstat(
+					luceneHelper.getExpedientPareEstat(
 							identificadorDesti));
 			String uuid = UUID.randomUUID().toString();
-			String parePath = getLuceneHelper().getPath(identificadorDesti);
+			String parePath = luceneHelper.getPath(identificadorDesti);
 			String path = getFilesystemHelper().carpetaCrear(
 					parePath,
 					uuid);
-			getLuceneHelper().carpetaCrear(
+			luceneHelper.carpetaCrear(
 					carpeta,
 					uuid,
 					identificadorDesti,
@@ -634,6 +813,14 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			throw new ArxiuException(
 					"Error al copiar el document: " + ex.getMessage(),
 					ex);
+		} finally {
+			try {
+				LuceneHelper.closeLuceneWriter();
+			} catch (IOException ex) {
+				throw new ArxiuException(
+						"No s'ha pogut tancar l'índex de lucene writer" + ex.getMessage(),
+						ex);
+			}
 		}
 	}
 
@@ -642,9 +829,10 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			String identificador,
 			String identificadorDesti) throws ArxiuException {
 		try {
-			String origenPath = getLuceneHelper().getPath(identificador);
-			String destiPath = getLuceneHelper().getPath(identificadorDesti);
-			getLuceneHelper().contingutMoure(
+			LuceneHelper luceneHelper = getLuceneHelper();
+			String origenPath = luceneHelper.getPath(identificador);
+			String destiPath = luceneHelper.getPath(identificadorDesti);
+			luceneHelper.contingutMoure(
 					ContingutTipus.CARPETA,
 					identificador,
 					identificadorDesti,
@@ -658,6 +846,13 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			throw new ArxiuException(
 					"Error al moure el document: " + ex.getMessage(),
 					ex);
+		} finally {
+			try {
+				LuceneHelper.closeLuceneWriter();
+			} catch (IOException ex) {
+				throw new ArxiuException(
+						ex);
+			}
 		}
 	}
 	
@@ -689,10 +884,7 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 
 
 	private LuceneHelper getLuceneHelper() {
-		if (luceneHelper == null) {
-			luceneHelper = new LuceneHelper(getPropertyBasePath());
-		}
-		return luceneHelper;
+		return new LuceneHelper(getPropertyBasePath());
 	}
 	private FileSystemHelper getFilesystemHelper() {
 		if (filesystemHelper == null) {
@@ -720,18 +912,18 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 	}
 
 	private void comprovarDocumentDefinitiuAmbFirmes(
-			Document document) throws IOException, ParseException {
+			Document document, LuceneHelper luceneHelper) throws IOException, ParseException {
 		boolean esDefinitiu = DocumentEstat.DEFINITIU.equals(document.getEstat());
 		boolean conteFirmes = document.getFirmes() != null;
-		if (esDefinitiu && !conteFirmes && !getLuceneHelper().isDocumentConteFirmes(document.getIdentificador())) {
+		if (esDefinitiu && !conteFirmes && !luceneHelper.isDocumentConteFirmes(document.getIdentificador())) {
 			throw new ArxiuException(
 					"No es pot marcar com a definitiu un document sense firmes");
 		}
 	}
 
 	private void comprovarExpedientNoConteDocumentsDefinitius(
-			String uuid) throws IOException {
-		if (getLuceneHelper().isExpedientConteDocumentsDefinitius(uuid)) {
+			String uuid, LuceneHelper luceneHelper) throws IOException {
+		if (luceneHelper.isExpedientConteDocumentsDefinitius(uuid)) {
 			throw new ArxiuException(
 					"L'expedient no es pot esborrar si conté documents definitius");
 		}
