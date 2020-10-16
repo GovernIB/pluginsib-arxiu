@@ -135,8 +135,8 @@ public class FileSystemHelper {
 			String path) throws FileNotFoundException, IOException {
 		File f = filePerDocumentContingut(path);
 		if (f.exists()) {
-			return IOUtils.toByteArray(
-					new FileInputStream(f));
+			FileInputStream fis = new FileInputStream(f);
+			return IOUtils.toByteArray(fis);
 		} else {
 			return null;
 		}
@@ -146,8 +146,8 @@ public class FileSystemHelper {
 			int index) throws FileNotFoundException, IOException {
 		File f = filePerDocumentFirma(path, index);
 		if (f.exists()) {
-			return IOUtils.toByteArray(
-					new FileInputStream(f));
+			FileInputStream fis = new FileInputStream(f);
+			return IOUtils.toByteArray(fis);
 		} else {
 			return null;
 		}

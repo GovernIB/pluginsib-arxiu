@@ -4,7 +4,7 @@
 package es.caib.plugins.arxiu.api;
 
 /**
- * Possibles estats d'un document.
+ * Possibles tipus NTI bàsics dels document.
  * 
  * RESOLUCIO: Resolución
  * ACORD: Acuerdo

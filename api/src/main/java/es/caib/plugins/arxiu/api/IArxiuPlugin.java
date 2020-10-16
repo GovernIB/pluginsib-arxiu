@@ -394,6 +394,12 @@ public interface IArxiuPlugin extends IPlugin {
 			String identificadorDesti) throws ArxiuException;
 
 	/**
+	 * Retorna una llista de tipus de documents addicionals suportats per l'arxiu.
+	 * 
+	 */
+	public List<DocumentTipusAddicional> documentTipusAddicionals();
+
+	/**
 	 * Indica si la implementació del plugin suporta el versionat
 	 * de expedients.
 	 * 
@@ -433,60 +439,60 @@ public interface IArxiuPlugin extends IPlugin {
 	 */
 	public boolean generaIdentificadorNti();
 
-  /**
-   * 
-   * @param identificadorDoc
-   * @return
-   * @throws ArxiuException
-   */
-  public String getCsv(String identificadorDoc) throws ArxiuException;
+	/**
+	 * 
+	 * @param identificadorDoc
+	 * @return
+	 * @throws ArxiuException
+	 */
+	public String getCsv(String identificadorDoc) throws ArxiuException;
 
-  /**
-   * 
-   * @param identificadorDoc
-   * @return
-   * @throws ArxiuException
-   */
-  public String getCsvValidationWeb(String identificadorDoc) throws ArxiuException;
+	/**
+	 * 
+	 * @param identificadorDoc
+	 * @return
+	 * @throws ArxiuException
+	 */
+	public String getCsvValidationWeb(String identificadorDoc) throws ArxiuException;
 
-  /**
-   * 
-   * @param identificadorDoc
-   * @return
-   * @throws ArxiuException
-   */
-  public String getCsvGenerationDefinition(String identificadorDoc) throws ArxiuException;
+	/**
+	 * 
+	 * @param identificadorDoc
+	 * @return
+	 * @throws ArxiuException
+	 */
+	public String getCsvGenerationDefinition(String identificadorDoc) throws ArxiuException;
 
-  /**
-   *
-   * @param identificadorDoc
-   * @return
-   * @throws Exception
-   */
-  String getOriginalFileUrl(String identificadorDoc) throws ArxiuException;
+	/**
+	 *
+	 * @param identificadorDoc
+	 * @return
+	 * @throws Exception
+	 */
+	String getOriginalFileUrl(String identificadorDoc) throws ArxiuException;
 
-  /**
-   *
-   * @param identificadorDoc
-   * @return
-   * @throws Exception
-   */
-  String getPrintableFileUrl(String identificadorDoc) throws ArxiuException;
+	/**
+	 *
+	 * @param identificadorDoc
+	 * @return
+	 * @throws Exception
+	 */
+	String getPrintableFileUrl(String identificadorDoc) throws ArxiuException;
 
-  /**
-   *
-   * @param identificadorDoc
-   * @return
-   * @throws Exception
-   */
-  String getEniFileUrl(String identificadorDoc) throws ArxiuException;
-  
-  /**
-   * 
-   * @param identificadorDoc
-   * @return
-   * @throws ArxiuException
-   */
-  String getValidationFileUrl(String identificadorDoc) throws ArxiuException;
+	/**
+	 *
+	 * @param identificadorDoc
+	 * @return
+	 * @throws Exception
+	 */
+	String getEniFileUrl(String identificadorDoc) throws ArxiuException;
+
+	/**
+	 * 
+	 * @param identificadorDoc
+	 * @return
+	 * @throws ArxiuException
+	 */
+	String getValidationFileUrl(String identificadorDoc) throws ArxiuException;
 
 }

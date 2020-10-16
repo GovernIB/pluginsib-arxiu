@@ -23,6 +23,7 @@ import es.caib.plugins.arxiu.api.Document;
 import es.caib.plugins.arxiu.api.DocumentContingut;
 import es.caib.plugins.arxiu.api.DocumentEstat;
 import es.caib.plugins.arxiu.api.DocumentRepositori;
+import es.caib.plugins.arxiu.api.DocumentTipusAddicional;
 import es.caib.plugins.arxiu.api.Expedient;
 import es.caib.plugins.arxiu.api.ExpedientEstat;
 import es.caib.plugins.arxiu.api.Firma;
@@ -264,7 +265,7 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 	}
 
 	@Override
-	public void expedientTancar(
+	public String expedientTancar(
 			String identificador) throws ArxiuException {
 		try {
 			LuceneHelper luceneHelper = getLuceneHelper();
@@ -275,6 +276,7 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			luceneHelper.expedientCanviEstat(
 					identificador,
 					ExpedientEstat.TANCAT);
+			return null;
 		} catch (ArxiuException aex) {
 			throw aex;
 		} catch (Exception ex) {
@@ -855,7 +857,12 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			}
 		}
 	}
-	
+
+	@Override
+	public List<DocumentTipusAddicional> documentTipusAddicionals() {
+		return null;
+	}
+
 	@Override
 	public boolean suportaVersionatExpedient() {
 		return false;

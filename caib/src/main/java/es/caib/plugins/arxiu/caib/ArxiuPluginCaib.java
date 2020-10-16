@@ -116,6 +116,7 @@ import es.caib.plugins.arxiu.api.DocumentEstat;
 import es.caib.plugins.arxiu.api.DocumentFormat;
 import es.caib.plugins.arxiu.api.DocumentMetadades;
 import es.caib.plugins.arxiu.api.DocumentRepositori;
+import es.caib.plugins.arxiu.api.DocumentTipusAddicional;
 import es.caib.plugins.arxiu.api.Expedient;
 import es.caib.plugins.arxiu.api.Firma;
 import es.caib.plugins.arxiu.api.FirmaTipus;
@@ -129,7 +130,7 @@ import es.caib.plugins.arxiu.caib.ArxiuCaibClient.GeneradorParam;
  * @author Limit Tecnologies <limit@limit.es>
  * @author anadal(u80067)
  */
-public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin  {
+public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin {
 
 	private static final String ARXIUCAIB_BASE_PROPERTY = ARXIU_BASE_PROPERTY + "caib.";
 	private static final int NUM_PAGINES_RESULTAT_CERCA = 100;
@@ -160,6 +161,7 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 	@Override
 	public ContingutArxiu expedientCrear(
 			final Expedient expedient) throws ArxiuException {
+		this.documentTipusAddicionals();
 		String metode = Servicios.CREATE_FILE;
 		try {
 			CreateFileResult resposta = getArxiuClient().generarEnviarPeticio(
@@ -1237,6 +1239,11 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 	}
 
 	@Override
+	public List<DocumentTipusAddicional> documentTipusAddicionals() {
+		return null;
+	}
+
+	@Override
 	public boolean suportaVersionatExpedient() {
 		return true;
 	}
@@ -1707,18 +1714,16 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 		}
 		return csv; 
 	}
- 
+
 	@Override
 	protected String getPropertyBase() {
 		return ARXIUCAIB_BASE_PROPERTY;
 	}
-	
-  @Override
-  public String getCsvGenerationDefinition(String identificadorDoc) throws ArxiuException {
 
-    String csvGenerationDefinitionEL = getPropertyDefinicioCsv();
-
-    return processExpressionLanguage(identificadorDoc, csvGenerationDefinitionEL);
-  }
+	@Override
+	public String getCsvGenerationDefinition(String identificadorDoc) throws ArxiuException {
+		String csvGenerationDefinitionEL = getPropertyDefinicioCsv();
+		return processExpressionLanguage(identificadorDoc, csvGenerationDefinitionEL);
+	}
 
 }
