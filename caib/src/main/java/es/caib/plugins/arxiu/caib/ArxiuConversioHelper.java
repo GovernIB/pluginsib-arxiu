@@ -545,7 +545,7 @@ public class ArxiuConversioHelper {
 			return null;
 		}
 		for (Content content: contents) {
-			if (TiposContenidosBinarios.CONTENT.equals(content.getBinaryType())) {
+			if (TiposContenidosBinarios.CONTENT.equals(content.getBinaryType()) && content.getContent() != null) {
 				DocumentContingut contingut = new DocumentContingut();
 				contingut.setContingut(Base64.decode(content.getContent()));
 				contingut.setTamany(contingut.getContingut().length);
@@ -594,14 +594,16 @@ public class ArxiuConversioHelper {
 			firma.setPerfil(FirmaPerfil.toEnum(firmaPerfil));
 			if (contents != null) {
 				for (Content content: contents) {
-					if (TiposContenidosBinarios.SIGNATURE.equals(content.getBinaryType())) {
-						firma.setContingut(Base64.decode(content.getContent()));
-						firma.setTamany(firma.getContingut().length);
-						firma.setTipusMime(content.getMimetype());
-					} else if ((FirmaTipus.PADES.equals(firmaTipusEnum) || FirmaTipus.CADES_ATT.equals(firmaTipusEnum)) && TiposContenidosBinarios.CONTENT.equals(content.getBinaryType())) {
-						firma.setContingut(Base64.decode(content.getContent()));
-						firma.setTamany(firma.getContingut().length);
-						firma.setTipusMime(content.getMimetype());
+					if (content.getContent() != null) {
+						if (TiposContenidosBinarios.SIGNATURE.equals(content.getBinaryType())) {
+							firma.setContingut(Base64.decode(content.getContent()));
+							firma.setTamany(firma.getContingut().length);
+							firma.setTipusMime(content.getMimetype());
+						} else if ((FirmaTipus.PADES.equals(firmaTipusEnum) || FirmaTipus.CADES_ATT.equals(firmaTipusEnum)) && TiposContenidosBinarios.CONTENT.equals(content.getBinaryType())) {
+							firma.setContingut(Base64.decode(content.getContent()));
+							firma.setTamany(firma.getContingut().length);
+							firma.setTipusMime(content.getMimetype());
+						}
 					}
 				}
 			}
