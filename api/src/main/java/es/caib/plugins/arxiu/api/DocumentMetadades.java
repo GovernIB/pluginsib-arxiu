@@ -27,14 +27,10 @@ public class DocumentMetadades {
 	private String identificadorOrigen;
 	private Map<String, Object> metadadesAddicionals;
 	String serieDocumental;
+	private String csv;
+	private String csvDef;
 	private String tipusDocumentalAddicional;
-	
-	public String getSerieDocumental() {
-		return serieDocumental;
-	}
-	public void setSerieDocumental(String serieDocumental) {
-		this.serieDocumental = serieDocumental;
-	}
+
 	public String getIdentificador() {
 		return identificador;
 	}
@@ -100,6 +96,24 @@ public class DocumentMetadades {
 	}
 	public void setMetadadesAddicionals(Map<String, Object> metadadesAddicionals) {
 		this.metadadesAddicionals = metadadesAddicionals;
+	}	
+	public String getSerieDocumental() {
+		return serieDocumental;
+	}
+	public void setSerieDocumental(String serieDocumental) {
+		this.serieDocumental = serieDocumental;
+	}
+	public String getCsv() {
+		return csv;
+	}
+	public void setCsv(String csv) {
+		this.csv = csv;
+	}
+	public String getCsvDef() {
+		return csvDef;
+	}
+	public void setCsvDef(String csvDef) {
+		this.csvDef = csvDef;
 	}
 	public String getTipusDocumentalAddicional() {
 		return tipusDocumentalAddicional;

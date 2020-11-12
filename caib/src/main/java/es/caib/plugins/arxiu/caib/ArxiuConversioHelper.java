@@ -651,8 +651,10 @@ public class ArxiuConversioHelper {
 				} else if (MetadatosDocumento.EXTENSION_FORMATO.equals(metadata.getQname())) {
 					metadades.setExtensio(
 							DocumentExtensio.toEnum(metadata.getValue().toString()));
-				//} else if (MetadatosDocumento.CSV.equals(metadata.getQname())) {
-				//} else if (MetadatosDocumento.DEF_CSV.equals(metadata.getQname())) {
+				} else if (MetadatosDocumento.CSV.equals(metadata.getQname())) {
+					metadades.setCsv((String)metadata.getValue());
+				} else if (MetadatosDocumento.DEF_CSV.equals(metadata.getQname())) {
+					metadades.setCsvDef((String)metadata.getValue());
 				} else {
 					Map<String, Object> metadadesAddicionals = metadades.getMetadadesAddicionals();
 					if (metadadesAddicionals == null) {

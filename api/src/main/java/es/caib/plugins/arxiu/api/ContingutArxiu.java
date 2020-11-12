@@ -18,8 +18,10 @@ public class ContingutArxiu {
 	protected String nom;
 	protected ContingutTipus tipus;
 	protected String versio;
-	private List<Firma> firmes;
-
+	protected List<Firma> firmes;
+	protected ExpedientMetadades expedientMetadades;
+	protected DocumentMetadades documentMetadades;
+	
 	public ContingutArxiu(ContingutTipus tipus) {
 		super();
 		this.tipus = tipus;
@@ -51,6 +53,18 @@ public class ContingutArxiu {
 	}
 	public void setFirmes(List<Firma> firmes) {
 		this.firmes = firmes;
+	}
+	public ExpedientMetadades getExpedientMetadades() {
+		return expedientMetadades;
+	}
+	public void setExpedientMetadades(ExpedientMetadades expedientMetadades) {
+		this.expedientMetadades = expedientMetadades;
+	}
+	public DocumentMetadades getDocumentMetadades() {
+		return documentMetadades;
+	}
+	public void setDocumentMetadades(DocumentMetadades documentMetadades) {
+		this.documentMetadades = documentMetadades;
 	}
 
 }
