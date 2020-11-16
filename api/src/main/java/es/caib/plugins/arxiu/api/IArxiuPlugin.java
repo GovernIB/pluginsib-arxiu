@@ -147,6 +147,35 @@ public interface IArxiuPlugin extends IPlugin {
 			String identificador) throws ArxiuException;
 
 	/**
+	 * Crea un lligam d'expedient a dins un expedient pare.
+	 * 
+	 * @param identificadorLligam
+	 *            Identificador de l'expedient a on es crearà l'enllaç.
+	 * @param identificadorFill
+	 *            Identificador de l'expedient a enllaçar.
+	 * @return L'dentificador del lligam creat.
+	 * @throws ArxiuException
+	 *             Si es produeix algun problema al realitzar l’operació amb l’arxiu.
+	 */
+	public String expedientLligar(
+			String identificadorPare,
+			String identificadorFill) throws ArxiuException;
+
+	/**
+	 * Deslliga un expedient de dins un expedient pare.
+	 * 
+	 * @param identificadorPare
+	 *            Identificador de l'expedient que conté l'enllaç.
+	 * @param identificadorLligam
+	 *            Identificador de l'enllaç a esborrar.
+	 * @throws ArxiuException
+	 *             Si es produeix algun problema al realitzar l’operació amb l’arxiu.
+	 */
+	public void expedientDeslligar(
+			String identificadorPare,
+			String identificadorLligam) throws ArxiuException;
+
+	/**
 	 * Crea un nou document.
 	 * 
 	 * @param document

@@ -535,6 +535,18 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 	}
 
 	@Override
+	public String expedientLligar(String identificadorPare, String identificadorFill) throws ArxiuException {
+		throw new ArxiuException(
+				"El mètode expedientLligar no està disponible");
+	}
+
+	@Override
+	public void expedientDeslligar(String identificadorPare, String identificadorLligam) throws ArxiuException {
+		throw new ArxiuException(
+				"El mètode expedientDeslligar no està disponible");
+	}
+
+	@Override
 	public ContingutArxiu documentCrear(
 			final Document document,
 			final String identificadorPare) throws ArxiuException {
