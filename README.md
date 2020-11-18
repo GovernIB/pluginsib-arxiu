@@ -12,7 +12,7 @@ Gestió documental orientada a expedients
 
 ***Documentació***
 
-[Documentació de branca](../../tree/pluginsib-arxiu-2.0#documentaci%C3%B3)
+[Documentació de branca](../../tree/pluginsib-arxiu-2.0/doc/odt)
 
 ***Enllaços***
 
