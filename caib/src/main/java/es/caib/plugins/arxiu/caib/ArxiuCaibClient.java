@@ -33,6 +33,7 @@ import es.caib.arxiudigital.apirest.CSGD.entidades.resultados.ExceptionResult;
 import es.caib.arxiudigital.apirest.CSGD.peticiones.Request;
 import es.caib.plugins.arxiu.api.ArxiuException;
 import es.caib.plugins.arxiu.api.ArxiuNotFoundException;
+import es.caib.plugins.arxiu.api.SerieDocumentalNotFoundException;
 
 /**
  * Client per a accedir a la funcionalitat de l'arxiu digital de
@@ -241,7 +242,9 @@ public class ArxiuCaibClient {
 				ExceptionResult.class);
 		String code = exceptionResult.getException().getCode();
 		String description = exceptionResult.getException().getDescription();
-		if ("COD_021".equals(code) && description.contains("not found")) {
+		if ("COD_021".equals(code) && description.contains("is not found in the classification table")) {
+			return new SerieDocumentalNotFoundException();
+		} else if ("COD_021".equals(code) && description.contains("not found")) {
 			return new ArxiuNotFoundException();
 		} else {
 			return new ArxiuCaibException(
