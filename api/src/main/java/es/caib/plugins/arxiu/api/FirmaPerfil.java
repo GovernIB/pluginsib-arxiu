@@ -18,7 +18,7 @@ public enum FirmaPerfil {
 	X("X"),
 	XL("XL"),
 	A("A"),
-	BASIC("BASIC");
+	BASIC("Basic");
 
 	private String str;
 
