@@ -67,9 +67,8 @@ public class ArxiuPluginCaibTest {
 	public static void setUp() {
 		try {
 			Properties properties = new Properties();
-			properties.load(
-					ArxiuPluginCaibTest.class.getClassLoader().getResourceAsStream(
-							"es/caib/plugins/arxiu/caib/test.properties"));
+			properties.load(ArxiuPluginCaibTest.class.getClassLoader().getResourceAsStream(
+					"es/caib/plugins/arxiu/caib/test.properties"));
 			arxiuPlugin = new ArxiuPluginCaib(
 					"",
 					properties);
@@ -1125,6 +1124,17 @@ public class ArxiuPluginCaibTest {
 					}
 				},
 				expedientPerCrear);
+	}
+
+	@Test
+	public void documentConsultaAmbId() throws Exception {
+		System.out.println("TEST: DOCUMENT DETALLS AMB UUID");
+		String uuid = "d742c85f-9acb-4a5c-9add-f8518a284f86";
+		System.out.println(
+				"1.- Consultant detalls del document (" +
+						"id=" + uuid + ")... ");
+		Document document = arxiuPlugin.documentDetalls(uuid, null, false);
+		assertNotNull(document);
 	}
 
 	@Test

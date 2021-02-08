@@ -147,6 +147,35 @@ public interface IArxiuPlugin extends IPlugin {
 			String identificador) throws ArxiuException;
 
 	/**
+	 * Crea un lligam d'expedient a dins un expedient pare.
+	 * 
+	 * @param identificadorLligam
+	 *            Identificador de l'expedient a on es crearà l'enllaç.
+	 * @param identificadorFill
+	 *            Identificador de l'expedient a enllaçar.
+	 * @return L'dentificador del lligam creat.
+	 * @throws ArxiuException
+	 *             Si es produeix algun problema al realitzar l’operació amb l’arxiu.
+	 */
+	public String expedientLligar(
+			String identificadorPare,
+			String identificadorFill) throws ArxiuException;
+
+	/**
+	 * Deslliga un expedient de dins un expedient pare.
+	 * 
+	 * @param identificadorPare
+	 *            Identificador de l'expedient que conté l'enllaç.
+	 * @param identificadorLligam
+	 *            Identificador de l'enllaç a esborrar.
+	 * @throws ArxiuException
+	 *             Si es produeix algun problema al realitzar l’operació amb l’arxiu.
+	 */
+	public void expedientDeslligar(
+			String identificadorPare,
+			String identificadorLligam) throws ArxiuException;
+
+	/**
 	 * Crea un nou document.
 	 * 
 	 * @param document
@@ -440,58 +469,79 @@ public interface IArxiuPlugin extends IPlugin {
 	public boolean generaIdentificadorNti();
 
 	/**
+	 * Retorna el valor del CSV associat a un document.
 	 * 
 	 * @param identificadorDoc
-	 * @return
+	 *            Identificador del document.
+	 * @return El valor del CSV.
 	 * @throws ArxiuException
+	 *             Si es produeix algun problema al realitzar l’operació amb l’arxiu.
 	 */
 	public String getCsv(String identificadorDoc) throws ArxiuException;
 
 	/**
+	 * Retorna la web per a la validació del CSV.
 	 * 
 	 * @param identificadorDoc
-	 * @return
+	 *            Identificador del document.
+	 * @return El valor de la web per a la validació del CSV.
 	 * @throws ArxiuException
+	 *             Si es produeix algun problema al realitzar l’operació amb l’arxiu.
 	 */
 	public String getCsvValidationWeb(String identificadorDoc) throws ArxiuException;
 
 	/**
+	 * Retorna el valor de la definició de la generació del CSV associat a un document.
 	 * 
 	 * @param identificadorDoc
-	 * @return
+	 *            Identificador del document.
+	 * @return El valor de la definició de la generació del CSV.
 	 * @throws ArxiuException
+	 *             Si es produeix algun problema al realitzar l’operació amb l’arxiu.
 	 */
 	public String getCsvGenerationDefinition(String identificadorDoc) throws ArxiuException;
 
 	/**
+	 * Retorna la URL de la versió original del document.
 	 *
 	 * @param identificadorDoc
-	 * @return
-	 * @throws Exception
+	 *            Identificador del document.
+	 * @return La URL de la versió original del document.
+	 * @throws ArxiuException
+	 *             Si es produeix algun problema al realitzar l’operació amb l’arxiu.
 	 */
 	String getOriginalFileUrl(String identificadorDoc) throws ArxiuException;
 
 	/**
+	 * Retorna la URL de la versió imprimible del document.
 	 *
 	 * @param identificadorDoc
-	 * @return
-	 * @throws Exception
+	 *            Identificador del document.
+	 * @return La URL de la versió imprimible del document.
+	 * @throws ArxiuException
+	 *             Si es produeix algun problema al realitzar l’operació amb l’arxiu.
 	 */
 	String getPrintableFileUrl(String identificadorDoc) throws ArxiuException;
 
 	/**
+	 * Retorna la URL de l’arxiu ENI del document.
 	 *
 	 * @param identificadorDoc
-	 * @return
-	 * @throws Exception
+	 *            Identificador del document.
+	 * @return La URL de l’arxiu ENI del document.
+	 * @throws ArxiuException
+	 *             Si es produeix algun problema al realitzar l’operació amb l’arxiu.
 	 */
 	String getEniFileUrl(String identificadorDoc) throws ArxiuException;
 
 	/**
+	 * Retorna la URL de validació del document.
 	 * 
 	 * @param identificadorDoc
-	 * @return
+	 *            Identificador del document.
+	 * @return La URL de validació del document.
 	 * @throws ArxiuException
+	 *             Si es produeix algun problema al realitzar l’operació amb l’arxiu.
 	 */
 	String getValidationFileUrl(String identificadorDoc) throws ArxiuException;
 

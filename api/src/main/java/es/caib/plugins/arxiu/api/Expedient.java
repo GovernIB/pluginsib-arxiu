@@ -12,7 +12,6 @@ import java.util.List;
  */
 public class Expedient extends ContingutArxiu {
 
-	private ExpedientMetadades metadades;
 	private List<ContingutArxiu> continguts;
 
 	public Expedient() {
@@ -20,10 +19,10 @@ public class Expedient extends ContingutArxiu {
 	}
 
 	public ExpedientMetadades getMetadades() {
-		return metadades;
+		return expedientMetadades;
 	}
 	public void setMetadades(ExpedientMetadades metadades) {
-		this.metadades = metadades;
+		this.expedientMetadades = metadades;
 	}
 	public List<ContingutArxiu> getContinguts() {
 		return continguts;

@@ -118,6 +118,7 @@ import es.caib.plugins.arxiu.api.DocumentMetadades;
 import es.caib.plugins.arxiu.api.DocumentRepositori;
 import es.caib.plugins.arxiu.api.DocumentTipusAddicional;
 import es.caib.plugins.arxiu.api.Expedient;
+import es.caib.plugins.arxiu.api.ExpedientMetadades;
 import es.caib.plugins.arxiu.api.Firma;
 import es.caib.plugins.arxiu.api.FirmaTipus;
 import es.caib.plugins.arxiu.api.IArxiuPlugin;
@@ -191,7 +192,9 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 					expedientCreat.getIdentificador(), 
 					expedientCreat.getNom(),
 					ContingutTipus.EXPEDIENT,
-					expedientCreat.getVersio());
+					expedientCreat.getVersio(),
+					expedientCreat.getExpedientMetadades(),
+					null);
 		} catch (ArxiuException aex) {
 			throw aex;
 		} catch (Exception ex) {
@@ -246,7 +249,9 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 					expedient.getIdentificador(), 
 					expedient.getNom(),
 					ContingutTipus.EXPEDIENT,
-					versio);
+					versio,
+					null,
+					null);
 		} catch (ArxiuException aex) {
 			throw aex;
 		} catch (Exception ex) {
@@ -413,7 +418,9 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 					expedientCreat.getIdentificador(), 
 					expedientCreat.getNom(),
 					ContingutTipus.EXPEDIENT,
-					expedientCreat.getVersio());
+					expedientCreat.getVersio(),
+					expedientCreat.getExpedientMetadades(),
+					null);
 		} catch (ArxiuException aex) {
 			throw aex;
 		} catch (Exception ex) {
@@ -528,6 +535,18 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 	}
 
 	@Override
+	public String expedientLligar(String identificadorPare, String identificadorFill) throws ArxiuException {
+		throw new ArxiuException(
+				"El mètode expedientLligar no està disponible");
+	}
+
+	@Override
+	public void expedientDeslligar(String identificadorPare, String identificadorLligam) throws ArxiuException {
+		throw new ArxiuException(
+				"El mètode expedientDeslligar no està disponible");
+	}
+
+	@Override
 	public ContingutArxiu documentCrear(
 			final Document document,
 			final String identificadorPare) throws ArxiuException {
@@ -621,7 +640,9 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 					creat.getIdentificador(), 
 					creat.getNom(),
 					ContingutTipus.DOCUMENT,
-					creat.getVersio());
+					creat.getVersio(),
+					null,
+					creat.getDocumentMetadades());
 		} catch (ArxiuException aex) {
 			throw aex;
 		} catch (Exception ex) {
@@ -707,7 +728,9 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 					document.getIdentificador(), 
 					document.getNom(),
 					ContingutTipus.DOCUMENT,
-					versio);
+					versio,
+					null,
+					null);
 		} catch (ArxiuException aex) {
 			throw aex;
 		} catch (Exception ex) {
@@ -878,7 +901,9 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 					resposta.getCopyDocumentResult().getResParam(),
 					null,
 					ContingutTipus.DOCUMENT,
-					VERSIO_INICIAL_CONTINGUT);
+					VERSIO_INICIAL_CONTINGUT,
+					null,
+					null);
 		} catch (ArxiuException aex) {
 			throw aex;
 		} catch (Exception ex) {
@@ -963,7 +988,9 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 						respostaDispatch.getDispatchDocumentResult().getResParam(),
 						null,
 						ContingutTipus.DOCUMENT,
-						VERSIO_INICIAL_CONTINGUT);
+						VERSIO_INICIAL_CONTINGUT,
+						null,
+						null);
 			}
 		} catch (ArxiuException aex) {
 			throw aex;
@@ -1074,6 +1101,8 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 					carpetaCreada.getIdentificador(), 
 					carpetaCreada.getNom(),
 					ContingutTipus.CARPETA,
+					null,
+					null,
 					null);
 		} catch (ArxiuException aex) {
 			throw aex;
@@ -1108,6 +1137,8 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 					carpeta.getIdentificador(),
 					carpeta.getNom(),
 					ContingutTipus.CARPETA,
+					null,
+					null,
 					null);
 		} catch (ArxiuException aex) {
 			throw aex;
@@ -1199,6 +1230,8 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 					resposta.getCopyFolderResult().getResParam(), 
 					null,
 					ContingutTipus.CARPETA,
+					null,
+					null,
 					null);
 		} catch (ArxiuException aex) {
 			throw aex;
@@ -1272,10 +1305,14 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 			String identificador, 
 			String nom,
 			ContingutTipus tipus,
-			String versio) {
+			String versio,
+			ExpedientMetadades expedientMetadades,
+			DocumentMetadades documentMetadades) {
 		ContingutArxiu informacioItem = new ContingutArxiu(tipus);
 		informacioItem.setIdentificador(identificador);
 		informacioItem.setNom(nom);
+		informacioItem.setExpedientMetadades(expedientMetadades);
+		informacioItem.setDocumentMetadades(documentMetadades);
 		return informacioItem;
 	}
 

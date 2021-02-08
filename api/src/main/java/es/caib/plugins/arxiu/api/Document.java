@@ -11,7 +11,6 @@ package es.caib.plugins.arxiu.api;
 public class Document extends ContingutArxiu {
 
 	private DocumentEstat estat;
-	private DocumentMetadades metadades;
 	private DocumentContingut contingut;
 
 	public Document() {
@@ -25,10 +24,10 @@ public class Document extends ContingutArxiu {
 		this.estat = estat;
 	}
 	public DocumentMetadades getMetadades() {
-		return metadades;
+		return documentMetadades;
 	}
 	public void setMetadades(DocumentMetadades metadades) {
-		this.metadades = metadades;
+		this.documentMetadades = metadades;
 	}
 	public DocumentContingut getContingut() {
 		return contingut;
