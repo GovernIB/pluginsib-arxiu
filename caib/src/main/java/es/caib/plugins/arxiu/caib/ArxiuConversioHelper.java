@@ -436,6 +436,12 @@ public class ArxiuConversioHelper {
 					metadades,
 					MetadatosDocumento.ORGANO,
 					documentMetadades.getOrgans());
+			if (documentMetadades.getIdentificadorOrigen() != null) {
+				addMetadata(
+						metadades,
+						MetadatosDocumento.ID_ORIGEN,
+						documentMetadades.getIdentificadorOrigen());
+			}
 			if (documentMetadades.getMetadadesAddicionals() != null) {
 				for (String clau : documentMetadades.getMetadadesAddicionals().keySet()) {
 					addMetadata(
@@ -655,6 +661,8 @@ public class ArxiuConversioHelper {
 					metadades.setCsv((String)metadata.getValue());
 				} else if (MetadatosDocumento.DEF_CSV.equals(metadata.getQname())) {
 					metadades.setCsvDef((String)metadata.getValue());
+				} else if (MetadatosDocumento.ID_ORIGEN.equals(metadata.getQname())) {
+					metadades.setIdentificadorOrigen(metadata.getValue().toString());
 				} else {
 					Map<String, Object> metadadesAddicionals = metadades.getMetadadesAddicionals();
 					if (metadadesAddicionals == null) {
