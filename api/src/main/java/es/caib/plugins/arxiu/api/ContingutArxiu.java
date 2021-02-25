@@ -16,6 +16,7 @@ public class ContingutArxiu {
 
 	protected String identificador;
 	protected String nom;
+	protected String descripcio;
 	protected ContingutTipus tipus;
 	protected String versio;
 	protected List<Firma> firmes;
@@ -38,6 +39,12 @@ public class ContingutArxiu {
 	}
 	public void setNom(String nom) {
 		this.nom = nom;
+	}
+	public String getDescripcio() {
+		return descripcio;
+	}
+	public void setDescripcio(String descripcio) {
+		this.descripcio = descripcio;
 	}
 	public ContingutTipus getTipus() {
 		return tipus;
