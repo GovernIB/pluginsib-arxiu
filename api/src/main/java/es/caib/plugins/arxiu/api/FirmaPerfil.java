@@ -18,7 +18,14 @@ public enum FirmaPerfil {
 	X("X"),
 	XL("XL"),
 	A("A"),
-	BASIC("Basic");
+	BASIC("BASIC"),
+	Basic("Basic"),
+	BASELINE_B_LEVEL("BASELINE_B_LEVEL"),
+	BASELINE_T_LEVEL("BASELINE_T_LEVEL"),
+	BASELINE_LT_LEVEL("BASELINE_LT_LEVEL"),
+	BASELINE_LTA_LEVEL("BASELINE_LTA_LEVEL"),
+	BASELINE_T("BASELINE_T"),
+	LTA("LTA");
 
 	private String str;
 
