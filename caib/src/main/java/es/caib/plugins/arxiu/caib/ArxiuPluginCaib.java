@@ -1571,8 +1571,8 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 						resposta.getGetDocumentResult().getResParam(),
 						null);
 				if (firmaTipus != null && documentResposta.getFirmes() != null && !documentResposta.getFirmes().isEmpty()) {
-					Firma primeraFirma = documentResposta.getFirmes().get(0);
-					if (!firmaTipus.equals(primeraFirma.getTipus())) {
+					Firma primeraFirma = getPrimeraFirmaNoCsv(documentResposta);
+					if (primeraFirma != null && !firmaTipus.equals(primeraFirma.getTipus())) {
 						throw new ArxiuValidacioException(
 								"El document de l'arxiu ja està firmat i el tipus de firma especificat (" + firmaTipus + ") no coicideix amb l'existent a l'arxiu (" + primeraFirma.getTipus() + ")");
 					}
@@ -1587,6 +1587,15 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 				}
 			}
 		}
+	}
+
+	private Firma getPrimeraFirmaNoCsv(Document document) {
+		for (Firma firma: document.getFirmes()) {
+			if (firma.getTipus() != FirmaTipus.CSV) {
+				return firma;
+			}
+		}
+		return null;
 	}
 
 	private InputStream generarVersioImprimible(
