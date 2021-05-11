@@ -566,22 +566,22 @@ public class ArxiuConversioHelper {
 			List<Content> contents,
 			List<Metadata> metadades) {
 		List<Firma> firmes = null;
-		String firmaTipus = null;
-		String firmaPerfil = null;
+		List<String> firmesTipus = new ArrayList<String>();
+		List<String> firmesPerfil = new ArrayList<String>();
 		String firmaCsv = null;
 		String firmaCsvRegulacio = null;
 		for (Metadata metadada: metadades) {
 			if (MetadatosDocumento.TIPO_FIRMA.equals(metadada.getQname())) {
-				firmaTipus = (String)metadada.getValue();
+				firmesTipus.add((String)metadada.getValue());
 			} else if (MetadatosDocumento.PERFIL_FIRMA.equals(metadada.getQname())) {
-				firmaPerfil = (String)metadada.getValue();
+				firmesPerfil.add((String)metadada.getValue());
 			} else if (MetadatosDocumento.CSV.equals(metadada.getQname())) {
 				firmaCsv = (String)metadada.getValue();
 			} else if (MetadatosDocumento.DEF_CSV.equals(metadada.getQname())) {
 				firmaCsvRegulacio = (String)metadada.getValue();
 			}
 		}
-		if (firmaCsv != null) {
+		/*if (firmaCsv != null) {
 			Firma firma = new Firma();
 			firma.setTipus(FirmaTipus.CSV);
 			firma.setContingut(firmaCsv.getBytes());
@@ -592,31 +592,46 @@ public class ArxiuConversioHelper {
 				firmes = new ArrayList<Firma>();
 			}
 			firmes.add(firma);
-		}
-		if (firmaTipus != null) {
-			FirmaTipus firmaTipusEnum = FirmaTipus.toEnum(firmaTipus);
-			Firma firma = new Firma();
-			firma.setTipus(firmaTipusEnum);
-			firma.setPerfil(FirmaPerfil.toEnum(firmaPerfil));
-			if (contents != null) {
-				for (Content content: contents) {
-					if (content.getContent() != null) {
-						if (TiposContenidosBinarios.SIGNATURE.equals(content.getBinaryType())) {
-							firma.setContingut(Base64.decode(content.getContent()));
-							firma.setTamany(firma.getContingut().length);
-							firma.setTipusMime(content.getMimetype());
-						} else if ((FirmaTipus.PADES.equals(firmaTipusEnum) || FirmaTipus.CADES_ATT.equals(firmaTipusEnum)) && TiposContenidosBinarios.CONTENT.equals(content.getBinaryType())) {
-							firma.setContingut(Base64.decode(content.getContent()));
-							firma.setTamany(firma.getContingut().length);
-							firma.setTipusMime(content.getMimetype());
+		}*/
+		if (!firmesTipus.isEmpty()) {
+			firmes = new ArrayList<Firma>();
+			for (int i = 0; i < firmesTipus.size(); i++) {
+				String firmaTipus = firmesTipus.get(i);
+				String firmaPerfil = null;
+				if (firmesPerfil.isEmpty() && firmesPerfil.size() > i) {
+					firmaPerfil = firmesPerfil.get(i);
+				}
+				FirmaTipus firmaTipusEnum = FirmaTipus.toEnum(firmaTipus);
+				Firma firma = new Firma();
+				firma.setTipus(firmaTipusEnum);
+				if (firmaPerfil != null) {
+					firma.setPerfil(FirmaPerfil.toEnum(firmaPerfil));
+				}
+				if (FirmaTipus.CSV.equals(firmaTipusEnum)) {
+					firma.setTipus(FirmaTipus.CSV);
+					firma.setContingut(firmaCsv.getBytes());
+					firma.setTamany(firma.getContingut().length);
+					firma.setTipusMime("text/plain");
+					firma.setCsvRegulacio(firmaCsvRegulacio);
+				} else {
+					if (contents != null) {
+						for (Content content: contents) {
+							if (content.getContent() != null) {
+								if (TiposContenidosBinarios.SIGNATURE.equals(content.getBinaryType())) {
+									firma.setContingut(Base64.decode(content.getContent()));
+									firma.setTamany(firma.getContingut().length);
+									firma.setTipusMime(content.getMimetype());
+								} else if ((FirmaTipus.PADES.equals(firmaTipusEnum) || FirmaTipus.CADES_ATT.equals(firmaTipusEnum)) && TiposContenidosBinarios.CONTENT.equals(content.getBinaryType())) {
+									firma.setContingut(Base64.decode(content.getContent()));
+									firma.setTamany(firma.getContingut().length);
+									firma.setTipusMime(content.getMimetype());
+								}
+							}
 						}
 					}
 				}
+				firmes.add(firma);
 			}
-			if (firmes == null) {
-				firmes = new ArrayList<Firma>();
-			}
-			firmes.add(firma);
 		}
 		return firmes;
 	}
