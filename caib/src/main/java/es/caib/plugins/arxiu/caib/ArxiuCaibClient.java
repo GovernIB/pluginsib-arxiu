@@ -53,7 +53,7 @@ public class ArxiuCaibClient {
 	private Client jerseyClient;
 	private ObjectMapper mapper;
 	
-	private boolean debug;
+	private boolean debug = false;
 
 	public ArxiuCaibClient(
 			String url,
@@ -260,18 +260,24 @@ public class ArxiuCaibClient {
 			Object peticio) throws UniformInterfaceException, ClientHandlerException, JsonProcessingException {
 		String urlAmbMetode = url + metode;
 		String body = mapper.writeValueAsString(peticio);
-		logger.info("Enviant petició HTTP a l'arxiu (" +
-				"url=" + urlAmbMetode + ", " +
-				"tipus=application/json " + (debug? (", body=" + body) : "" )
-				 + ")");
+		if (logger.isDebugEnabled()) {
+			boolean logRequestBody = debug || logger.isTraceEnabled();
+			logger.debug("Enviant petició HTTP a l'arxiu (" +
+					"url=" + urlAmbMetode + ", " +
+					"tipus=application/json " + (logRequestBody ? (", body=" + body) : "" )
+					 + ")");
+		}
 		ClientResponse response = jerseyClient.
 				resource(urlAmbMetode).
 				type("application/json").
 				post(ClientResponse.class, body);
 		String json = response.getEntity(String.class);
-		logger.info("Rebuda resposta HTTP de l'arxiu ("
-				+ "status=" + response.getStatus() 
-				+ (debug? (", " + "body=" + json): "") + ")");
+		if (logger.isDebugEnabled()) {
+			boolean logResponseBody = debug || logger.isTraceEnabled();
+			logger.debug("Rebuda resposta HTTP de l'arxiu ("
+					+ "status=" + response.getStatus() 
+					+ (logResponseBody ? (", " + "body=" + json): "") + ")");
+		}
 		return new JerseyResponse(
 				json,
 				response.getStatus());
