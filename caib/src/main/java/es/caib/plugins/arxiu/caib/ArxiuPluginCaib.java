@@ -1313,6 +1313,7 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 		informacioItem.setNom(nom);
 		informacioItem.setExpedientMetadades(expedientMetadades);
 		informacioItem.setDocumentMetadades(documentMetadades);
+		informacioItem.setVersio(versio);
 		return informacioItem;
 	}
 
