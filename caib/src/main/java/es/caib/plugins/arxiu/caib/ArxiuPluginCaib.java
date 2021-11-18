@@ -603,6 +603,7 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 						Object.class,
 						GenerateDocCSVResult.class);
 				final String csv = respostaCsv.getGenerateDocCSVResult().getResParam();
+				comprovarCsv(csv);
 				metode = Servicios.CREATE_DOC;
 				CreateDocumentResult resposta = getArxiuClient().generarEnviarPeticio(
 						metode,
@@ -672,6 +673,7 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 						Object.class,
 						GenerateDocCSVResult.class);
 				final String csv = respostaCsv.getGenerateDocCSVResult().getResParam();
+				comprovarCsv(csv);
 				metode = Servicios.SET_FINAL_DOC;
 				getArxiuClient().generarEnviarPeticio(
 						metode,
@@ -1516,6 +1518,18 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 			}
 		}
 	}
+	
+	private void comprovarCsv(String csv) {
+		if (csv == null) {
+			throw new ArxiuValidacioException(
+					"El CSV obtingut de l'Arxiu és null" + csv);			
+		}
+		if (!csv.matches("^([0-9a-f]{64})$")) {			
+			throw new ArxiuValidacioException(
+					"El CSV obtingut de l'Arxiu no té un format correcte : \"" + csv + "\"");
+		}
+	}
+
 
 	private void comprovarFirma(
 			final Document document) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, UniformInterfaceException, ClientHandlerException, IOException {
