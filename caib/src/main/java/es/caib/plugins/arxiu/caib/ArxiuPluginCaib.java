@@ -554,7 +554,6 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 		try {
 			comprovarAbsenciaMetadadaCsv(document.getMetadades());
 			comprovarFirma(document);
-			
 			final String serieDocumental;
 			if (document.getMetadades().getSerieDocumental() != null && !document.getMetadades().getSerieDocumental().isEmpty())
 				serieDocumental = document.getMetadades().getSerieDocumental();
@@ -562,7 +561,6 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 				serieDocumental = findSerieDocumentalExpedientPare(
 					document,
 					identificadorPare);
-			
 			Document creat = null;
 			if (DocumentEstat.ESBORRANY.equals(document.getEstat())) {
 				metode = Servicios.CREATE_DRAFT;
