@@ -18,7 +18,6 @@ public class ContingutArxiu {
 	protected String nom;
 	protected String descripcio;
 	protected ContingutTipus tipus;
-	protected String csv;
 	protected String versio;
 	protected List<Firma> firmes;
 	protected ExpedientMetadades expedientMetadades;
@@ -49,12 +48,6 @@ public class ContingutArxiu {
 	}
 	public ContingutTipus getTipus() {
 		return tipus;
-	}
-	public String getCsv() {
-		return csv;
-	}
-	public void setCsv(String csv) {
-		this.csv = csv;
 	}
 	public String getVersio() {
 		return versio;
