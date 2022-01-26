@@ -724,13 +724,20 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 			}
 			String versio = documentDarreraVersio(
 					document.getIdentificador());
+			GetDocumentResult resposta = getDocumentResult(
+					document.getIdentificador(),
+					versio,
+					false);
+			Document documentDetalls = ArxiuConversioHelper.documentNodeToDocument(
+					resposta.getGetDocumentResult().getResParam(),
+					versio);
 			return crearContingutArxiu(
 					document.getIdentificador(), 
 					document.getNom(),
 					ContingutTipus.DOCUMENT,
 					versio,
 					null,
-					null);
+					documentDetalls.getDocumentMetadades());
 		} catch (ArxiuException aex) {
 			throw aex;
 		} catch (Exception ex) {
