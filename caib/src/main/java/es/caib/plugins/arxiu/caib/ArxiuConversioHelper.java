@@ -127,7 +127,7 @@ public class ArxiuConversioHelper {
 		DocumentNode node = new DocumentNode();
 		node.setId(document.getIdentificador());
 		node.setName(
-				revisarContingutNom(document.getNom()));
+				document.getContingut() != null ? revisarContingutNom(getNomSenseExtensio(document.getContingut().getArxiuNom())) : null);
 		node.setType(TiposObjetoSGD.DOCUMENTO);
 		node.setBinaryContents(
 				toBinaryContents(document));
@@ -140,7 +140,8 @@ public class ArxiuConversioHelper {
 						metadadesPrevies,
 						csv,
 						csvDef,
-						definitiu));
+						definitiu, 
+						document.getNom()));
 		node.setAspects(
 				generarAspectes(aspectesPrevis, creacio));
 		return node;
@@ -390,7 +391,8 @@ public class ArxiuConversioHelper {
 			List<Metadata> metadadesPrevies,
 			String csv,
 			String csvDef,
-			boolean definitiu) throws ArxiuException {
+			boolean definitiu, 
+			String titol) throws ArxiuException {
 		List<Metadata> metadades = new ArrayList<Metadata>();
 		if (metadadesPrevies != null) {
 			metadades.addAll(metadadesPrevies);
@@ -450,6 +452,15 @@ public class ArxiuConversioHelper {
 							documentMetadades.getMetadadesAddicionals().get(clau));
 				}
 			}
+			if (!documentMetadades.getMetadadesAddicionals().containsKey("cm:title") && titol != null) {
+				addMetadata(
+						metadades,
+						"cm:title",
+						titol);
+				
+			}
+			
+			
 		}
 		boolean firmaCsvConfigurada = false;
 		if (firmes != null) {
@@ -837,10 +848,24 @@ public class ArxiuConversioHelper {
 	}
 
 	private static String revisarContingutNom(String nom) {
-		if (nom == null) {
+		if (nom != null) {
+			return nom.replaceAll("[^a-zA-Z0-9_ -]", "").trim();
+		} else {
 			return null;
 		}
-		return nom.replace("&", "&amp;").replaceAll("[\\\\/:*?\"<>|]", "_");
+	}
+	
+	private static String getNomSenseExtensio(String nom) {
+		if (nom != null) {
+			int indexPunt = nom.lastIndexOf(".");
+			if (indexPunt != -1 && indexPunt < nom.length() - 1) {
+				return nom.substring(0, indexPunt + 1);
+			} else {
+				return nom;
+			}
+		} else {
+			return null;
+		}
 	}
 
 }
