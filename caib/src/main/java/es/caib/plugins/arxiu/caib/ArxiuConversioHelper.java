@@ -127,7 +127,7 @@ public class ArxiuConversioHelper {
 		DocumentNode node = new DocumentNode();
 		node.setId(document.getIdentificador());
 		node.setName(
-				document.getContingut() != null ? revisarContingutNom(getNomSenseExtensio(document.getContingut().getArxiuNom())) : null);
+				document.getContingut() != null ? revisarContingutNom((document.getContingut().getArxiuNom())) : null);
 		node.setType(TiposObjetoSGD.DOCUMENTO);
 		node.setBinaryContents(
 				toBinaryContents(document));
@@ -849,23 +849,11 @@ public class ArxiuConversioHelper {
 
 	private static String revisarContingutNom(String nom) {
 		if (nom != null) {
-			return nom.replaceAll("[^a-zA-Z0-9_ -]", "").trim();
+			return nom.replaceAll("[\n\t]", "").replaceAll("[^a-zA-Z0-9_ -.()]", "").trim();
 		} else {
 			return null;
 		}
 	}
 	
-	private static String getNomSenseExtensio(String nom) {
-		if (nom != null) {
-			int indexPunt = nom.lastIndexOf(".");
-			if (indexPunt != -1 && indexPunt < nom.length() - 1) {
-				return nom.substring(0, indexPunt + 1);
-			} else {
-				return nom;
-			}
-		} else {
-			return null;
-		}
-	}
 
 }
