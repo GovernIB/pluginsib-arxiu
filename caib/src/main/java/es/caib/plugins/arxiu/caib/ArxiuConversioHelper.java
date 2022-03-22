@@ -4,6 +4,7 @@
 package es.caib.plugins.arxiu.caib;
 
 import java.text.DateFormat;
+import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -126,8 +127,7 @@ public class ArxiuConversioHelper {
 			boolean definitiu) throws ArxiuException {
 		DocumentNode node = new DocumentNode();
 		node.setId(document.getIdentificador());
-		node.setName(
-				document.getContingut() != null ? revisarContingutNom((document.getContingut().getArxiuNom())) : null);
+		node.setName(revisarContingutNom(document.getNom()));
 		node.setType(TiposObjetoSGD.DOCUMENTO);
 		node.setBinaryContents(
 				toBinaryContents(document));
@@ -141,7 +141,7 @@ public class ArxiuConversioHelper {
 						csv,
 						csvDef,
 						definitiu, 
-						document.getNom()));
+						document.getDescripcio()));
 		node.setAspects(
 				generarAspectes(aspectesPrevis, creacio));
 		return node;
@@ -849,7 +849,9 @@ public class ArxiuConversioHelper {
 
 	private static String revisarContingutNom(String nom) {
 		if (nom != null) {
-			return nom.replaceAll("[\n\t]", "").replaceAll("[^a-zA-Z0-9_ -.()]", "").trim();
+			String nomNormalitzat = Normalizer.normalize(nom, Normalizer.Form.NFD);   
+			String nomSenseAccents = nomNormalitzat.replaceAll("[^\\p{ASCII}]", "");
+			return nomSenseAccents.replaceAll("[\n\t]", "").replaceAll("[^a-zA-Z0-9_ -.()]", "").trim();
 		} else {
 			return null;
 		}
