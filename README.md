@@ -3,7 +3,7 @@
 
 ***Versions***
 
-> - Versió Estable: [PLUGINSIB-ARXIU 2.0.17](../../releases/tag/pluginsib-arxiu-2.0.17_20220318)
+> - Versió Estable: [PLUGINSIB-ARXIU 2.0.18](../../releases/tag/tag/v2.0.18)
 > - Branca activa: __pluginsib-arxiu-2.0__ (branca [pluginsib-arxiu-2.0](../../tree/pluginsib-arxiu-2.0))
 
 ***Descripció***
