@@ -9,7 +9,9 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
@@ -96,6 +98,7 @@ public class LuceneHelper {
 	private static final String LUCENE_FIELD_FIRMA_DEFCSV = "firma_defcsv";
 	private static final String LUCENE_FIELD_FIRMA_PERFIL = "firma_perfil";
 	private static final String LUCENE_FIELD_FIRMA_MIME = "firma_mime";
+	private static final String LUCENE_FIELD_FIRMA_ARXIUNOM = "firma_arxiunom";
 
 	//private FSDirectory luceneDirectory;
 	private static Analyzer luceneAnalyzer;
@@ -262,6 +265,7 @@ public class LuceneHelper {
 					doc.get(LUCENE_FIELD_CONT_MIME));
 			document.setContingut(contingut);
 		}
+		document.setEstat(DocumentEstat.valueOf(doc.get(LUCENE_FIELD_META_ESTAT)));
 		DocumentMetadades metadades = new DocumentMetadades();
 		metadades.setIdentificador(
 				doc.get(LUCENE_FIELD_META_ID));
@@ -286,11 +290,16 @@ public class LuceneHelper {
 		metadades.setExtensio(
 				DocumentExtensio.toEnum(doc.get(LUCENE_FIELD_META_EXTENSIO)));
 		metadades.setIdentificadorOrigen(doc.get(LUCENE_FIELD_META_ORIG_ID));
+		
+		Map<String, Object> metadadesAddicionals = new HashMap<String, Object>();
+		metadades.setMetadadesAddicionals(metadadesAddicionals);
+		
 		String[] firmesTipus = doc.getValues(LUCENE_FIELD_FIRMA_TIPUS);
 		String[] firmaPerfils = doc.getValues(LUCENE_FIELD_FIRMA_PERFIL);
 		String[] firmaMimes = doc.getValues(LUCENE_FIELD_FIRMA_MIME);
 		String[] firmaCsvs = doc.getValues(LUCENE_FIELD_FIRMA_CSV);
 		String[] firmaDefCsvs = doc.getValues(LUCENE_FIELD_FIRMA_DEFCSV);
+		String[] firmaFitxerNoms = doc.getValues(LUCENE_FIELD_FIRMA_ARXIUNOM);
 		if (firmesTipus != null && firmesTipus.length > 0) {
 			List<Firma> firmes = new ArrayList<Firma>();
 			int csvIndex = 0;
@@ -300,6 +309,8 @@ public class LuceneHelper {
 				firma.setTipus(firmaTipus);
 				firma.setPerfil(FirmaPerfil.toEnum(firmaPerfils[i]));
 				firma.setTipusMime(firmaMimes[i]);
+				firma.setFitxerNom(firmaFitxerNoms[i]);
+				
 				if (FirmaTipus.CSV.equals(firmaTipus)) {
 					String csv = firmaCsvs[csvIndex];
 					String defcsv = firmaDefCsvs[csvIndex];
@@ -370,7 +381,14 @@ public class LuceneHelper {
 		Document doc = findByUuid(
 				tipus,
 				uuid);
-		String pathContingutMogut = pathDesti + "/" + doc.get(LUCENE_FIELD_META_ID);
+		String prefix = "";
+		if (tipus == ContingutTipus.DOCUMENT) {
+			prefix = "D_";
+		} else if (tipus == ContingutTipus.CARPETA) {
+			prefix = "C_";
+		}
+	
+		String pathContingutMogut = pathDesti + "/" + prefix + doc.get(LUCENE_FIELD_META_ID);
 		Document docMogut = crearLuceneDocument(
 				tipus,
 				uuid,
@@ -682,11 +700,13 @@ public class LuceneHelper {
 					doc,
 					LUCENE_FIELD_META_ORIG_ID,
 					metadades.getIdentificadorOrigen());
+			
 		}
 		if (document.getFirmes() != null) {
 			doc.removeFields(LUCENE_FIELD_FIRMA_TIPUS);
 			doc.removeFields(LUCENE_FIELD_FIRMA_PERFIL);
 			doc.removeFields(LUCENE_FIELD_FIRMA_MIME);
+			doc.removeFields(LUCENE_FIELD_FIRMA_ARXIUNOM);
 			doc.removeFields(LUCENE_FIELD_FIRMA_CSV);
 			doc.removeFields(LUCENE_FIELD_FIRMA_DEFCSV);
 			for (Firma firma: document.getFirmes()) {
@@ -705,6 +725,11 @@ public class LuceneHelper {
 								LUCENE_FIELD_FIRMA_MIME,
 								firma.getTipusMime(),
 								Store.YES));
+				doc.add(
+							new StringField(
+									LUCENE_FIELD_FIRMA_ARXIUNOM,
+									firma.getFitxerNom() != null ? firma.getFitxerNom() : "",
+									Store.YES));
 				if (FirmaTipus.CSV.equals(firma.getTipus())) {
 					doc.add(
 							new StringField(

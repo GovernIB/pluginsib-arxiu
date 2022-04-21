@@ -27,6 +27,7 @@ import es.caib.plugins.arxiu.api.DocumentTipusAddicional;
 import es.caib.plugins.arxiu.api.Expedient;
 import es.caib.plugins.arxiu.api.ExpedientEstat;
 import es.caib.plugins.arxiu.api.Firma;
+import es.caib.plugins.arxiu.api.FirmaTipus;
 import es.caib.plugins.arxiu.api.IArxiuPlugin;
 
 public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiuPlugin {
@@ -476,6 +477,7 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 			String versio,
 			boolean ambContingut) throws ArxiuException {
 		try {
+			identificador = identificador.replace("uuid:",""); //notib adds prefix "uuid"
 			if (versio != null) {
 				throw new ArxiuException(
 						"Aquesta implementació de l'API d'arxiu no suporta el versionat de documents");
@@ -505,6 +507,11 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 					byte[] content = getFilesystemHelper().documentFirma(path, i) != null ? getFilesystemHelper().documentFirma(path, i) : getFilesystemHelper().documentContingut(path);
 					firma.setContingut(content);
 					firma.setTamany(firma.getContingut().length);
+					if (firma.getTipus() != FirmaTipus.CADES_DET) {
+						if (document.getContingut() != null) {
+							document.getContingut().setArxiuNom(firma.getFitxerNom());
+						}
+					}
 				}
 			}
 			return document;
@@ -663,9 +670,54 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 
 	@Override
 	public DocumentContingut documentImprimible(String identificador) throws ArxiuException {
-		throw new ArxiuException(
-				"El mètode documentImprimible no està disponible");
+		identificador = identificador.replace("uuid:",""); //notib adds prefix "uuid"
+		try {
+			LuceneHelper luceneHelper = getLuceneHelper();
+			Document document = luceneHelper.documentDetalls(identificador);
+			String path = luceneHelper.getPath(identificador);
+			
+			boolean firmaAttached = false;
+			String tipusMime = null;
+			List<Firma> firmes = document.getFirmes();
+			if (firmes != null && !firmes.isEmpty()) {
+				Firma firma = firmes.get(0);
+				if (firma.getTipus() != FirmaTipus.CADES_DET) {
+					firmaAttached = true;
+					tipusMime = firma.getTipusMime();
+				}
+			}
+			if (firmaAttached) {
+				document.setContingut(new DocumentContingut());
+				document.getContingut().setContingut(
+						getFilesystemHelper().documentFirma(path, 0));
+				document.getContingut().setTipusMime(tipusMime);
+			} else {
+				document.getContingut().setContingut(
+						getFilesystemHelper().documentContingut(path));
+			}
+
+			document.getContingut().setTamany(
+					document.getContingut().getContingut().length);
+
+			return document.getContingut();
+		} catch (ArxiuException aex) {
+			throw aex;
+		} catch (Exception ex) {
+			throw new ArxiuException(
+					"Error al obtenir el versio imprimbile: " + ex.getMessage(),
+					ex);
+		} finally {
+			try {
+				LuceneHelper.closeLuceneWriter();
+			} catch (IOException ex) {
+				throw new ArxiuException(
+						"No s'ha pogut tancar l'índex de lucene writer" + ex.getMessage(),
+						ex);
+			}
+		}
 	}
+	
+	
 
 	@Override
 	public ContingutArxiu carpetaCrear(

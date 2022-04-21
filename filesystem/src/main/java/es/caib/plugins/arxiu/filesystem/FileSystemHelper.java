@@ -118,14 +118,17 @@ public class FileSystemHelper {
 		}
 		return path;
 	}
-
+	
 	public void directoriMoure(
 			String pathOrigen,
 			String pathDesti) throws IOException {
-		FileUtils.moveDirectory(
+		FileUtils.moveDirectoryToDirectory(
 				new File(pathOrigen),
-				new File(pathDesti));
+				new File(pathDesti), 
+				false);
 	}
+
+
 	public void directoriEsborrar(
 			String path) throws IOException {
 		FileUtils.deleteDirectory(new File(path));
