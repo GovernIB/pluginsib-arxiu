@@ -123,7 +123,7 @@ public class LuceneHelper {
 			luceneAnalyzer = new KeywordAnalyzer();
 			luceneWriter = new IndexWriter(
 					luceneDirectory, 
-					new IndexWriterConfig(luceneAnalyzer));
+					new IndexWriterConfig(luceneAnalyzer).setWriteLockTimeout(600000));
 			//luceneReader = DirectoryReader.open(luceneDirectory);
 			//luceneSearcher = new IndexSearcher(luceneReader);
 		} catch (IOException e) {
