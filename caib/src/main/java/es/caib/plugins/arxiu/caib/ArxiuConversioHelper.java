@@ -4,7 +4,6 @@
 package es.caib.plugins.arxiu.caib;
 
 import java.text.DateFormat;
-import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -849,14 +848,21 @@ public class ArxiuConversioHelper {
 		}
 	}
 
-	private static String revisarContingutNom(String nom) {
+	/** 
+	 * Substitueix salts de línia i tabuladors per espais i lleva caràcters esttranys no contemplats.
+	 * 
+	 * @param nom Nom del contingut a revisar.
+	 * @return Retorna el nom substituïnt tabuladors, salts de línia i apòstrofs per espais i ignorant caràcters
+	 * invàlids. També treu el punt final en cas d'haver-n'hi.
+	 */
+	public static String revisarContingutNom(String nom) {
 		if (nom != null) {
-			String nomNormalitzat = Normalizer.normalize(nom, Normalizer.Form.NFD);   
-			String nomSenseAccents = nomNormalitzat.replaceAll("[^\\p{ASCII}]", "");
-			return nomSenseAccents.replaceAll("[\n\t]", "").replaceAll("[^a-zA-Z0-9_ -.()]", "").trim();
-		} else {
-			return null;
+			nom = nom.replaceAll("[\\s\\']", " ").replaceAll("[^\\wçñàáèéíòóúü()\\-,\\.·\\s]", "").trim();
+			if (nom.endsWith(".")) {
+				nom = nom.substring(0, nom.length()-1);
+			}
 		}
+		return nom;
 	}
 	
 
