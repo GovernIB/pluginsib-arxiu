@@ -1368,7 +1368,7 @@ public class ArxiuPluginCaibTest {
 	@Test
 	public void expedientDocumentCaractersEstranys() throws Exception {
 		System.out.println("TEST: EXPEDIENT I DOCUMENT AMB CARACTERS ESTRANYS");
-		String nomExp = "ARXIUAPI_prova_exp_" + System.currentTimeMillis();
+		String nomExp = " ARXIUAPI_prova_exp_ Caça Pròva\nd'invàl·lida 2 " + System.currentTimeMillis() + "?.";
 		final Expedient expedientPerCrear = new Expedient();
 		expedientPerCrear.setNom(nomExp);
 		final ExpedientMetadades metadades = new ExpedientMetadades();
@@ -1379,7 +1379,17 @@ public class ArxiuPluginCaibTest {
 		metadades.setInteressats(interessatsTest);
 		metadades.setSerieDocumental(SERIE_DOCUMENTAL);
 		expedientPerCrear.setMetadades(metadades);
-		//String nomDoc = "ARXIUAPI_prova_doc_" + System.currentTimeMillis();
+		String nomExpDispatch = " ARXIUAPI_prova_exp_dispatch_" + System.currentTimeMillis() + "?.";
+		final Expedient expedientPerDispatch = new Expedient();
+		expedientPerDispatch.setNom(nomExpDispatch);
+		final ExpedientMetadades metadadesDispatch = new ExpedientMetadades();
+		metadadesDispatch.setOrgans(organsTest);
+		metadadesDispatch.setDataObertura(new Date());
+		metadadesDispatch.setClassificacio("organo1_PRO_123456789");
+		metadadesDispatch.setEstat(ExpedientEstat.OBERT);
+		metadadesDispatch.setInteressats(interessatsTest);
+		metadadesDispatch.setSerieDocumental(SERIE_DOCUMENTAL); // Si és la mateixa sèrie el documentMoure retorna null
+		expedientPerDispatch.setMetadades(metadadesDispatch);
 		String nomDoc = " ARXIUAPI_prova_doc_ Caça Pròva\nd'invàl·lida 2 " + System.currentTimeMillis() + "? ";
 		final Document documentPerCrear = new Document();
 		documentPerCrear.setNom(nomDoc);
@@ -1403,10 +1413,18 @@ public class ArxiuPluginCaibTest {
 				new TestAmbElementsCreats() {
 					@Override
 					public void executar(List<ContingutArxiu> elementsCreats) throws IOException {
+						ContingutArxiu expedientCreat = elementsCreats.get(0);
+						String expedientCreatId = expedientCreat.getIdentificador();
+						System.out.println("1.- Obtenint l'expedient creat (id=" + expedientCreatId + ")... ");
+						Expedient expedientDetalls = arxiuPlugin.expedientDetalls(
+								expedientCreatId,
+								null);
+						assertNotNull(expedientDetalls);
+						System.out.println("Ok");
 						ContingutArxiu documentCreat = elementsCreats.get(1);
 						String documentCreatId = documentCreat.getIdentificador();
 						System.out.println(
-								"1.- Comprovant informació del document creat (" +
+								"2.- Comprovant informació del document creat (" +
 								"id=" + documentCreatId + ")... ");
 						Document documentDetalls = arxiuPlugin.documentDetalls(
 								documentCreatId,
@@ -1420,86 +1438,66 @@ public class ArxiuPluginCaibTest {
 								false);
 						System.out.println("Ok");
 						System.out.println(
-								"2.- Modificant document (" +
+								"3.- Guardant firma de document i marcant com a definitiu (" +
 								"id=" + documentCreatId + ")... ");
 						Document documentPerModificar = new Document();
 						documentPerModificar.setIdentificador(documentCreatId);
-						documentPerModificar.setNom(documentPerCrear.getNom() + "_MOD");
-						documentPerModificar.setMetadades(documentMetadades);
-						DocumentContingut contingutPerModificar = new DocumentContingut();
-						contingutPerModificar.setContingut(
+						documentPerModificar.setNom(documentDetalls.getNom());
+						Firma firmaPades = new Firma();
+						firmaPades.setTipus(FirmaTipus.PADES);
+						firmaPades.setPerfil(FirmaPerfil.EPES);
+						firmaPades.setTipusMime("application/pdf");
+						firmaPades.setContingut(
 								IOUtils.toByteArray(
-										getDocumentContingutEsborranyOdtModificat()));
-						contingutPerModificar.setTipusMime("application/vnd.oasis.opendocument.text");
-						documentPerModificar.setContingut(contingutPerModificar);
-						ContingutArxiu documentModificat = arxiuPlugin.documentModificar(
+										getDocumentFirmaPdf()));
+						documentPerModificar.setFirmes(Arrays.asList(firmaPades));
+						DocumentMetadades documentMetadadesModificar = new DocumentMetadades();
+						documentMetadadesModificar.setFormat(DocumentFormat.PDF);
+						documentMetadadesModificar.setExtensio(DocumentExtensio.PDF);
+						documentPerModificar.setMetadades(documentMetadadesModificar);
+						documentPerModificar.setEstat(DocumentEstat.DEFINITIU);
+						ContingutArxiu contingutModificat = arxiuPlugin.documentModificar(
 								documentPerModificar);
-						assertNotNull(documentModificat);
-						assertEquals(documentCreatId, documentModificat.getIdentificador());
+						assertNotNull(contingutModificat);
 						System.out.println("Ok");
+						elementsCreats.remove(documentCreat);
+						elementsCreats.remove(expedientCreat);
 						System.out.println(
-								"3.- Comprovant informació del document modificat (" +
+								"4.- Comprovant informació del document final (" +
 								"id=" + documentCreatId + ")... ");
-						Document documentModificatDetalls = arxiuPlugin.documentDetalls(
+						Document documentTancatDetalls = arxiuPlugin.documentDetalls(
 								documentCreatId,
 								null,
 								true);
-						documentComprovar(
-								documentPerModificar,
-								documentModificatDetalls,
-								true);
+						assertNotNull(documentTancatDetalls);
 						System.out.println("Ok");
 						System.out.println(
-								"4.- Comprovant les versions del document (" +
+								"5.- Fa un dispatch del document final a l'expedient del dispatch (" +
 								"nodeId=" + documentCreatId + ")... ");
-						List<ContingutArxiu> versions = arxiuPlugin.documentVersions(documentCreatId);
-						assertNotNull(versions);
-						assertEquals(2, versions.size());
-						ContingutArxiu versio0 = versions.get(0);
-						System.out.println("v" + versio0.getVersio() + "... ");
-						Document documentVersio0 = arxiuPlugin.documentDetalls(
-								documentCreatId,
-								versio0.getVersio(),
-								true);
-						documentComprovar(
-								documentPerCrear,
-								documentVersio0,
-								false);
-						ContingutArxiu versio1 = versions.get(1);
-						System.out.println("v" + versio1.getVersio() + "... ");
-						Document documentVersio1 = arxiuPlugin.documentDetalls(
-								documentCreatId,
-								versio1.getVersio(),
-								true);
-						documentComprovar(
-								documentPerModificar,
-								documentVersio1,
-								false);
-						System.out.println("Ok");
-						System.out.println(
-								"5.- Esborrant document creat (" +
-								"id=" + documentCreatId + ")... ");
-						arxiuPlugin.documentEsborrar(documentCreatId);
-						elementsCreats.remove(documentCreat);
-						System.out.println("Ok");
-						System.out.println(
-								"6.- Obtenint document esborrat per verificar que no existeix (" +
-								"id=" + documentCreatId + ")... ");
-						try {
-							arxiuPlugin.documentDetalls(
-									documentCreat.getIdentificador(),
+						ContingutArxiu expedientDispatchCreat = elementsCreats.get(0);
+						String expedientDispatchCreatId = expedientDispatchCreat.getIdentificador();
+						ContingutArxiu documentMogut = arxiuPlugin.documentMoure(documentCreatId, expedientDispatchCreatId);
+						if (documentMogut != null) {
+							String documentMogutId = documentMogut.getIdentificador();
+							System.out.println("Ok");
+							System.out.println(
+									"6.- Consultant detalls del document mogut (" +
+									"nodeId=" + documentMogutId + ")... ");
+							Document documentMogutDetalls = arxiuPlugin.documentDetalls(
+									documentMogutId,
 									null,
-									false);
-							fail("No s'hauria d'haver trobat el document una vegada esborrat (id=" + documentCreatId + ")");
-						} catch (ArxiuNotFoundException ex) {
+									true);
+							assertNotNull(documentMogutDetalls);
 							System.out.println("Ok");
 						}
+						// Esborra la llista d'elements creats perquè no es poden esborrar
+						elementsCreats.clear();
 					}
 				},
 				expedientPerCrear,
-				documentPerCrear);
+				documentPerCrear,
+				expedientPerDispatch);
 	}
-
 
 	private void testCreantElements(
 			TestAmbElementsCreats test,
@@ -1611,7 +1609,7 @@ public class ArxiuPluginCaibTest {
 					expedientPerComprovar.getIdentificador());
 		}
 		assertEquals(
-				expedientEsperat.getNom(),
+				ArxiuConversioHelper.revisarContingutNom(expedientEsperat.getNom()),
 				expedientPerComprovar.getNom());
 		if (expedientEsperat.getMetadades() != null) {
 			assertNotNull(expedientPerComprovar.getMetadades());

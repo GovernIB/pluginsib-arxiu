@@ -23,7 +23,8 @@ public class ArxiuConversioHelperTest {
 	public void revisarContingutNomTest() {
 		String[] nomsProva = new String[] {
 				" Caça Pròva\nd'invàl·lida 2", 	// Caça Pròva d invàl·lida 2
-				"prova?."						// prova
+				"prova?.",						// prova
+				" prova\tnom\nd'arxiu miscel·lània (e^2).pdf. "
 		};
 		String nom, nomCorregit;
 		boolean correcte;
