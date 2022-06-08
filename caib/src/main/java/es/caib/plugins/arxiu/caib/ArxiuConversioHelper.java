@@ -452,7 +452,9 @@ public class ArxiuConversioHelper {
 							documentMetadades.getMetadadesAddicionals().get(clau));
 				}
 			}
-			if (!documentMetadades.getMetadadesAddicionals().containsKey("cm:title") && titol != null) {
+			if (	(documentMetadades.getMetadadesAddicionals() == null
+						|| !documentMetadades.getMetadadesAddicionals().containsKey("cm:title"))
+					&& titol != null) {
 				addMetadata(
 						metadades,
 						"cm:title",

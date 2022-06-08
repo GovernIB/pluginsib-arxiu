@@ -574,6 +574,8 @@ public class ArxiuPluginCaibTest {
 								documentFirmat,
 								false);
 						System.out.println("Ok");
+						// Neteja la llista d'elemetns creats per evitar que s'intentin esborrar
+						elementsCreats.clear();
 					}
 				},
 				expedientPerCrear,
@@ -746,6 +748,8 @@ public class ArxiuPluginCaibTest {
 						assertNotNull(documentDefinitiu);
 						assertEquals(DocumentEstat.DEFINITIU, documentDefinitiu.getEstat());
 						System.out.println("Ok");
+						// Neteja la llista d'elemetns creats per evitar que s'intentin esborrar
+						elementsCreats.clear();
 					}
 				},
 				expedientPerCrear,
