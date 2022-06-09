@@ -1550,6 +1550,11 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 					}
 				}
 			}
+			// Validació temporal per evitar problema en el tancament d'Arxiu #61
+			if (FirmaTipus.CADES_DET.equals(firmaTipus)) {
+				throw new ArxiuValidacioException(
+						"De moment l'Arixu no soporta firmes de tipus TF04 - CAdES detached/explicit signature");
+			}
 			boolean formatComprovat = false;
 			if (document.getMetadades() != null && document.getMetadades().getFormat() != null) {
 				if (FirmaTipus.PADES.equals(firmaTipus)) {
