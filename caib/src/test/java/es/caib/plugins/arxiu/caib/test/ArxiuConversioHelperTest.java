@@ -24,7 +24,9 @@ public class ArxiuConversioHelperTest {
 		String[] nomsProva = new String[] {
 				" Caça Pròva\nd'invàl·lida 2", 	// Caça Pròva d invàl·lida 2
 				"prova?.",						// prova
-				" prova\tnom\nd'arxiu miscel·lània (e^2).pdf. "
+				" prova\tnom d'arxiu miscel·lània (e^2).pdf. ",
+				" hòlaÁÑÇaa !|*\\{}[]?"
+				
 		};
 		String nom, nomCorregit;
 		boolean correcte;
@@ -32,7 +34,7 @@ public class ArxiuConversioHelperTest {
 			nom = nomsProva[i];
 			nomCorregit = ArxiuConversioHelper.revisarContingutNom(nom);
 			correcte = this.pathCorrecte(nomCorregit);
-			System.out.println("\"" + nom + "\"-> \"" + nomCorregit + "\", correcte? " + correcte + "|");
+			System.out.println("\"" + nom + "\"-> \"" + nomCorregit + "\"| correcte? " + correcte);
 			assertTrue("S'ha detectat un nom d'arxiu corregit incorrecte: \"" + nomCorregit + "\"", correcte);
 		}
 	}

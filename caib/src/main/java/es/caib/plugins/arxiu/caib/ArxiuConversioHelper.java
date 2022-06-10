@@ -857,7 +857,7 @@ public class ArxiuConversioHelper {
 	 */
 	public static String revisarContingutNom(String nom) {
 		if (nom != null) {
-			nom = nom.replaceAll("[\\s\\']", " ").replaceAll("[^\\wçñàáèéíòóúü()\\-,\\.·\\s]", "").trim();
+			nom = nom.replaceAll("[\\s\\']", " ").replaceAll("[^\\wçñàáèéíïòóúüCÑÀÁÈÉÍÏÒÓÚÜ()\\-,\\.·\\s]", "").trim();
 			if (nom.endsWith(".")) {
 				nom = nom.substring(0, nom.length()-1);
 			}
