@@ -563,35 +563,10 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 					identificadorPare);
 			Document creat = null;
 			if (DocumentEstat.ESBORRANY.equals(document.getEstat())) {
-				metode = Servicios.CREATE_DRAFT;
-				CreateDraftDocumentResult resposta = getArxiuClient().generarEnviarPeticio(
-						metode,
-						CreateDraftDocument.class,
-						new GeneradorParam<ParamCreateDraftDocument>() {
-							@Override
-							public ParamCreateDraftDocument generar() {
-								ParamCreateDraftDocument param = new ParamCreateDraftDocument();
-								param.setParent(identificadorPare);
-								param.setDocument(
-										ArxiuConversioHelper.documentToDocumentNode(
-												document,
-												serieDocumental,
-												null,
-												null,
-												null,
-												null,
-												null,
-												true,
-												false));
-								param.setRetrieveNode(Boolean.TRUE.toString());
-								return param;
-							}
-						},
-						ParamCreateDraftDocument.class,
-						CreateDraftDocumentResult.class);
-				creat = ArxiuConversioHelper.documentNodeToDocument(
-						resposta.getCreateDraftDocumentResult().getResParam(),
-						VERSIO_INICIAL_CONTINGUT);
+				creat = this.documentCrearDraft(
+									document, 
+									identificadorPare, 
+									serieDocumental);
 			} else if (DocumentEstat.DEFINITIU.equals(document.getEstat())) {
 				metode = Servicios.GENERATE_CSV;
 				GenerateDocCSVResult respostaCsv = getArxiuClient().generarEnviarPeticio(
@@ -649,6 +624,43 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 					"S'ha produit un error cridant el mètode " + metode,
 					ex);
 		}
+	}
+
+	private Document documentCrearDraft(
+			final Document document, 
+			final String identificadorPare, 
+			final String serieDocumental) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, UniformInterfaceException, ClientHandlerException, IOException {
+
+		String metode = Servicios.CREATE_DRAFT;
+		CreateDraftDocumentResult resposta = getArxiuClient().generarEnviarPeticio(
+				metode,
+				CreateDraftDocument.class,
+				new GeneradorParam<ParamCreateDraftDocument>() {
+					@Override
+					public ParamCreateDraftDocument generar() {
+						ParamCreateDraftDocument param = new ParamCreateDraftDocument();
+						param.setParent(identificadorPare);
+						param.setDocument(
+								ArxiuConversioHelper.documentToDocumentNode(
+										document,
+										serieDocumental,
+										null,
+										null,
+										null,
+										null,
+										null,
+										true,
+										false));
+						param.setRetrieveNode(Boolean.TRUE.toString());
+						return param;
+					}
+				},
+				ParamCreateDraftDocument.class,
+				CreateDraftDocumentResult.class);
+		Document creat = ArxiuConversioHelper.documentNodeToDocument(
+				resposta.getCreateDraftDocumentResult().getResParam(),
+				VERSIO_INICIAL_CONTINGUT);
+		return creat;
 	}
 
 	@Override
@@ -929,7 +941,7 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 				identificadorDesti,
 				null);
 	}
-
+	
 	@Override
 	public ContingutArxiu documentMoure(
 			final String identificador,
@@ -968,36 +980,46 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 						MoveDocumentResult.class);
 				return null;
 			} else {
-				metode = Servicios.DISPATCH_DOC;
-				DispatchDocumentResult respostaDispatch = getArxiuClient().generarEnviarPeticio(
-						metode,
-						DispatchDocument.class,
-						new GeneradorParam<ParamDispatchDocument>() {
-							@Override
-							public ParamDispatchDocument generar() {
-								ParamDispatchDocument param = new ParamDispatchDocument();
-								param.setSourceNodeId(identificador);
-								TargetNode targetNode = new TargetNode();
-								targetNode.setId(identificadorDesti);
-								targetNode.setTargetType("-");
-								DocClassification docClassification = new DocClassification();
-								docClassification.setSerie(serieDocumentalDesti);
-								//docClassification.setType(type);
-								targetNode.setDocClassification(docClassification);
-								param.setTargetNode(targetNode);
-								return param;
-							}
-						},
-						ParamDispatchDocument.class,
-						DispatchDocumentResult.class);
-				respostaDispatch.getDispatchDocumentResult().getResParam();
-				return crearContingutArxiu(
-						respostaDispatch.getDispatchDocumentResult().getResParam(),
-						null,
-						ContingutTipus.DOCUMENT,
-						VERSIO_INICIAL_CONTINGUT,
-						null,
-						null);
+				
+				if (DocumentEstat.DEFINITIU.equals(documentOrigen.getEstat())) {
+					
+					metode = Servicios.DISPATCH_DOC;
+					DispatchDocumentResult respostaDispatch = getArxiuClient().generarEnviarPeticio(
+							metode,
+							DispatchDocument.class,
+							new GeneradorParam<ParamDispatchDocument>() {
+								@Override
+								public ParamDispatchDocument generar() {
+									ParamDispatchDocument param = new ParamDispatchDocument();
+									param.setSourceNodeId(identificador);
+									TargetNode targetNode = new TargetNode();
+									targetNode.setId(identificadorDesti);
+									targetNode.setTargetType("-");
+									DocClassification docClassification = new DocClassification();
+									docClassification.setSerie(serieDocumentalDesti);
+									//docClassification.setType(type);
+									targetNode.setDocClassification(docClassification);
+									param.setTargetNode(targetNode);
+									return param;
+								}
+							},
+							ParamDispatchDocument.class,
+							DispatchDocumentResult.class);
+					respostaDispatch.getDispatchDocumentResult().getResParam();
+					return crearContingutArxiu(
+							respostaDispatch.getDispatchDocumentResult().getResParam(),
+							null,
+							ContingutTipus.DOCUMENT,
+							VERSIO_INICIAL_CONTINGUT,
+							null,
+							null);
+				} else {
+					// Crea un document draft en el destí
+					return this.documentCrearDraft(
+							documentOrigen, 
+							identificadorDesti, 
+							serieDocumentalDesti);					
+				}
 			}
 		} catch (ArxiuException aex) {
 			throw aex;
