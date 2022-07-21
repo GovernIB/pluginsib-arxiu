@@ -54,6 +54,21 @@ public class ArxiuPluginCaibInfoTest {
 		printContingut(document);
 	}
 
+	@Test
+	public void documentMoure() {
+		String identificador = "95d88eda-76c3-4626-bebd-533b2139e1b1";
+		String identificadorDesti = "80504b55-1b1d-459f-999f-2590807ec069";
+		ContingutArxiu contingutArxiu = arxiuPlugin.documentMoure(
+				identificador,
+				identificadorDesti);
+		if (contingutArxiu != null) {
+			printContingut(contingutArxiu);
+		} else {
+			System.out.println("El contingutArxiu retornat és null");
+		}
+	}
+
+	
 	private void printContingut(ContingutArxiu contingut) {
 		System.out.println(">>> Contingut de l'arxiu:");
 		System.out.println(">>>    tipus: " + contingut.getTipus());

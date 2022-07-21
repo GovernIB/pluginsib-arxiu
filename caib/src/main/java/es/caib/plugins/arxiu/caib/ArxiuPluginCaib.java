@@ -1014,6 +1014,14 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 							null,
 							null);
 				} else {
+					// Torna a consultar el document amb contingut
+					respostaGet = getDocumentResult(
+							identificador,
+							null,
+							true);
+					documentOrigen = ArxiuConversioHelper.documentNodeToDocument(
+							respostaGet.getGetDocumentResult().getResParam(),
+							null);
 					// Crea un document draft en el destí
 					return this.documentCrearDraft(
 							documentOrigen, 
