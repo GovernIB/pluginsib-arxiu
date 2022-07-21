@@ -3,7 +3,7 @@
 
 ***Versions***
 
-> - Versió Estable: [PLUGINSIB-ARXIU 2.0.20](../../releases/tag/v2.0.20). Aquesta versió permet guardar documents firmats TF04 la qual cosa no és recomanable per la versió actual de l'Arxiu Digital CAIB, es recomana la versió 2.0.19.
+> - Versió Estable: [PLUGINSIB-ARXIU 2.0.22](../../releases/tag/v2.0.22). Aquesta versió permet guardar documents firmats TF04 la qual cosa no és recomanable per la versió actual de l'Arxiu Digital CAIB, es recomana la versió 2.0.19.
 > - Branca activa: __pluginsib-arxiu-2.0__ (branca [pluginsib-arxiu-2.0](../../tree/pluginsib-arxiu-2.0))
 
 ***Descripció***
