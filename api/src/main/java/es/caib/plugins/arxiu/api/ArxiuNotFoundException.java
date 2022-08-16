@@ -22,9 +22,21 @@ public class ArxiuNotFoundException extends ArxiuException {
 		this.identificador = identificador;
 	}
 	public ArxiuNotFoundException(
+			String tipus,
+			String identificador,
+			Throwable cause) {
+		super("Contingut no trobat: " + generarMessage(tipus, identificador), cause);
+		this.tipus = tipus;
+		this.identificador = identificador;
+	}
+	public ArxiuNotFoundException(
 			String identificador) {
 		super("Contingut no trobat: " + generarMessage(null, identificador));
 		this.identificador = identificador;
+	}
+	public ArxiuNotFoundException(
+			Throwable cause) {
+		super("Contingut no trobat", cause);
 	}
 	public ArxiuNotFoundException() {
 		super("Contingut no trobat");

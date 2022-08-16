@@ -1142,6 +1142,25 @@ public class ArxiuPluginCaibTest {
 		assertNotNull(document);
 	}
 
+//	@Test
+	public void documentConsultaAmbIdNotFound() throws Exception {
+		System.out.println("TEST: DOCUMENT DETALLS AMB UUID");
+		String uuid = "d742c85f-9acb-4a5c-9add-f8518a284f85";
+		System.out.println("1.- Consultant detalls del document (id=" + uuid + ")... ");
+		Document document = null;
+		String errorCause = null;
+		try {
+			document = arxiuPlugin.documentDetalls(uuid, null, false);
+		} catch (ArxiuException e) {
+			e.printStackTrace();
+			assertTrue(e instanceof ArxiuNotFoundException);
+			errorCause = e.getCause().getMessage();
+			System.out.println("Causa de l'error: " + errorCause);
+		}
+		assertNotNull(errorCause);
+		assertNull(document);
+	}
+
 	@Test
 	public void documentConsultaAmbCsv() throws Exception {
 		String csv = "5dbd524a1bb90bde8e98c105f3aa480f7ba1784dda504e7b119d7d0394f75d65";

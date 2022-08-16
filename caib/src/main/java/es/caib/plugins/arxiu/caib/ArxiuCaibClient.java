@@ -245,7 +245,7 @@ public class ArxiuCaibClient {
 		if ("COD_021".equals(code) && description.contains("is not found in the classification table")) {
 			return new SerieDocumentalNotFoundException();
 		} else if ("COD_021".equals(code) && description.contains("not found")) {
-			return new ArxiuNotFoundException();
+			return new ArxiuNotFoundException(new Throwable(description));
 		} else {
 			return new ArxiuCaibException(
 					metode,
