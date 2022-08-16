@@ -819,6 +819,26 @@ public class ArxiuConversioHelper {
 			return TiposDocumentosENI.OTROS_INCAUTADOS;
 		case ALTRES:
 			return TiposDocumentosENI.OTROS;
+		case LLEI:							// TD51
+		case MOCIO:							// TD52
+		case INSTRUCCIO:					// TD53
+		case CONVOCATORIA:					// TD54
+		case ORDRE_DIA:						// TD55
+		case INFORME_PONENCIA:				// TD56
+		case DICTAMEN_COMISSIO:				// TD57
+		case INICIATIVA_LEGISLATIVA:		// TD58
+		case PREGUNTA:						// TD59
+		case INTERPELACIO:					// TD60
+		case RESPOSTA:						// TD61
+		case PROPOSICIO_NO_LLEI:			// TD62
+		case ESMENA:						// TD63
+		case PROPOSTA_RESOLUCIO:			// TD64
+		case COMPAREIXENSA:					// TD65
+		case SOLICITUD_INFORMACIO:			// TD66
+		case ESCRIT:						// TD67
+		case INICIATIVA__LEGISLATIVA:		// TD68
+		case PETICIO:						// TD69
+			throw new ArxiuException("El tipus de document especificat (" + documentTipus + " - " + documentTipus.name() + ") no està suportat per el sistema de destí.");
 		default:
 			throw new ArxiuException(
 					"No s'ha pogut convertir el valor per l'enumeració ArxiuDocumentTipus (" +
