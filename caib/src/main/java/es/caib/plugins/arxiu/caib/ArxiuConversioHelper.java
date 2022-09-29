@@ -610,7 +610,7 @@ public class ArxiuConversioHelper {
 			for (int i = 0; i < firmesTipus.size(); i++) {
 				String firmaTipus = firmesTipus.get(i);
 				String firmaPerfil = null;
-				if (firmesPerfil.isEmpty() && firmesPerfil.size() > i) {
+				if (firmesPerfil.size() > i) {
 					firmaPerfil = firmesPerfil.get(i);
 				}
 				FirmaTipus firmaTipusEnum = FirmaTipus.toEnum(firmaTipus);
