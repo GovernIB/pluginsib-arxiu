@@ -15,6 +15,8 @@ import java.util.Properties;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
@@ -1773,7 +1775,18 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 		return getProperty(ARXIUCAIB_BASE_PROPERTY + "contrasenya");
 	}
 	private String getPropertyDefinicioCsv() {
-		return getProperty(ARXIUCAIB_BASE_PROPERTY + "csv.definicio");
+		
+		String definicioCsv = getProperty(ARXIUCAIB_BASE_PROPERTY + "csv.definicio");
+		if (definicioCsv != null && !definicioCsv.isEmpty()) {
+			// Propietat plugin.arxiu.caib.csv.definicio en desús
+			logger.error("La propietat '" + ARXIUCAIB_BASE_PROPERTY + "csv.definicio' està deprecada."
+								+ " Per favor faci ús de la propietat '" + getPropertyBase()
+								+ ABSTRACT_CSV_GENERATION_DEFINITION + "'.", new Exception());
+		} else {
+			// Propietat de l'AbstractArxiuPlugin plugin.arxiu.caib.csv_generation_definition
+			definicioCsv = getProperty(getPropertyBase() + ABSTRACT_CSV_GENERATION_DEFINITION);
+		}
+		return definicioCsv;
 	}
 	private String getPropertyConversioImprimibleUrl() {
 		return getProperty(ARXIUCAIB_BASE_PROPERTY + "conversio.imprimible.url");
@@ -1828,4 +1841,5 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 		return processExpressionLanguage(identificadorDoc, csvGenerationDefinitionEL);
 	}
 
+	private static final Logger logger = LoggerFactory.getLogger(ArxiuPluginCaib.class);
 }
