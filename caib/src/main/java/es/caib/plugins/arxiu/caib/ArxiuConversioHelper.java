@@ -523,7 +523,9 @@ public class ArxiuConversioHelper {
 		}
 		if (document.getFirmes() != null) {
 			for (Firma firma: document.getFirmes()) {
-				if (!FirmaTipus.CSV.equals(firma.getTipus()) && !FirmaTipus.PADES.equals(firma.getTipus())) {
+				if (!FirmaTipus.CSV.equals(firma.getTipus()) 
+						&& !FirmaTipus.PADES.equals(firma.getTipus())
+						&& !FirmaTipus.XADES_ENV.equals(firma.getTipus())) {
 					Content content = new Content();
 					content.setBinaryType(TiposContenidosBinarios.SIGNATURE);
 					if (firma.getContingut() != null) {
@@ -535,11 +537,11 @@ public class ArxiuConversioHelper {
 						contents = new ArrayList<Content>();
 					}
 					contents.add(content);
-				} else if (
-						FirmaTipus.PADES.equals(firma.getTipus()) &&
-						document.getContingut() == null &&
-						firma.getContingut() != null) {
-					// En el cas de les firmes PAdES es dona la possibilitat de que
+				} else if ((FirmaTipus.PADES.equals(firma.getTipus()) 
+								|| FirmaTipus.XADES_ENV.equals(firma.getTipus()))
+						&& document.getContingut() == null 
+						&& firma.getContingut() != null) {
+					// En el cas de les firmes PAdES o XADES_ENV es dona la possibilitat de que
 					// el contingut del PDF firmat s'especifiqui a dins la firma o com
 					// a contingut. En el cas de que s'especifiqui a dins la firma el
 					// contingut haurà de ser null.
@@ -633,7 +635,9 @@ public class ArxiuConversioHelper {
 									firma.setContingut(Base64.decode(content.getContent()));
 									firma.setTamany(firma.getContingut().length);
 									firma.setTipusMime(content.getMimetype());
-								} else if ((FirmaTipus.PADES.equals(firmaTipusEnum) || FirmaTipus.CADES_ATT.equals(firmaTipusEnum)) && TiposContenidosBinarios.CONTENT.equals(content.getBinaryType())) {
+								} else if ((FirmaTipus.PADES.equals(firmaTipusEnum) 
+											|| FirmaTipus.XADES_ENV.equals(firmaTipusEnum)
+											|| FirmaTipus.CADES_ATT.equals(firmaTipusEnum)) && TiposContenidosBinarios.CONTENT.equals(content.getBinaryType())) {
 									firma.setContingut(Base64.decode(content.getContent()));
 									firma.setTamany(firma.getContingut().length);
 									firma.setTipusMime(content.getMimetype());
