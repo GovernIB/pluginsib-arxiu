@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -87,6 +88,8 @@ public class ArxiuCaibClient {
 		mapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
 		// Per a no serialitzar propietats amb valors NULL
 		mapper.setSerializationInclusion(Include.NON_NULL);
+		// Permetre salts de línia en el valors
+		mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
 	}
 
 	public ArxiuCaibClient(
