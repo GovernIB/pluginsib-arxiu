@@ -1521,7 +1521,95 @@ public class ArxiuPluginCaibTest {
 
 	
 	@Test
-	public void documentXmlFirmatTF03() throws Exception {
+	public void documentXmlFirmat_TF02_XADES_DET() throws Exception {
+		System.out.println("TEST: DOCUMENT XML FIRMAT TF03 - XAdES dettached.");
+		String nomExp = "ARXIUAPI_prova_exp_" + System.currentTimeMillis();
+		final Expedient expedientPerCrear = new Expedient();
+		expedientPerCrear.setNom(nomExp);
+		final ExpedientMetadades metadades = new ExpedientMetadades();
+		metadades.setOrgans(organsTest);
+		metadades.setDataObertura(new Date());
+		metadades.setClassificacio("organo1_PRO_123456789");
+		metadades.setEstat(ExpedientEstat.OBERT);
+		metadades.setInteressats(interessatsTest);
+		metadades.setSerieDocumental(SERIE_DOCUMENTAL);
+		expedientPerCrear.setMetadades(metadades);
+		String nomDoc = "ARXIUAPI_prova_doc_" + System.currentTimeMillis();
+		final Document documentPerCrear = new Document();
+		documentPerCrear.setNom(nomDoc);
+		documentPerCrear.setEstat(DocumentEstat.ESBORRANY);
+		final DocumentMetadades documentMetadades = new DocumentMetadades();
+		documentMetadades.setOrigen(ContingutOrigen.CIUTADA);
+		documentMetadades.setOrgans(organsTest);
+		documentMetadades.setDataCaptura(new Date());
+		documentMetadades.setEstatElaboracio(DocumentEstatElaboracio.ORIGINAL);
+		documentMetadades.setTipusDocumental(DocumentTipus.ALTRES);
+		documentMetadades.setFormat(DocumentFormat.XML);
+		documentMetadades.setExtensio(DocumentExtensio.XML);
+		documentPerCrear.setMetadades(documentMetadades);
+		DocumentContingut documentContingut = new DocumentContingut();
+		documentContingut.setContingut(
+				IOUtils.toByteArray(
+						getDocumentAltre("formulari.xml")));
+		documentContingut.setTipusMime("application/xml");
+		documentPerCrear.setContingut(documentContingut);
+		testCreantElements(
+				new TestAmbElementsCreats() {
+					@Override
+					public void executar(List<ContingutArxiu> elementsCreats) throws IOException {
+						//ContingutArxiu expedientCreat = elementsCreats.get(0);
+						//String expedientCreatId = expedientCreat.getIdentificador();
+						ContingutArxiu documentCreat = elementsCreats.get(1);
+						String documentCreatId = documentCreat.getIdentificador();
+						System.out.println(
+								"1.- Guardant firma (" +
+								"id=" + documentCreatId + ")... ");
+						Document documentPerModificar = new Document();
+						documentPerModificar.setIdentificador(documentCreatId);
+						Firma firmaXadesEnv = new Firma();
+						firmaXadesEnv.setTipus(FirmaTipus.XADES_ENV);
+						firmaXadesEnv.setPerfil(FirmaPerfil.BES);
+						firmaXadesEnv.setTipusMime("application/xml");
+						firmaXadesEnv.setContingut(
+								IOUtils.toByteArray(
+										getDocumentAltre("formulari.xml_xades_dettached.xsig")));
+						documentPerModificar.setFirmes(Arrays.asList(firmaXadesEnv));
+						DocumentMetadades documentMetadadesModificar = new DocumentMetadades();
+						documentMetadadesModificar.setFormat(DocumentFormat.XML);
+						documentMetadadesModificar.setExtensio(DocumentExtensio.XML);
+						documentPerModificar.setMetadades(documentMetadadesModificar);
+						documentPerModificar.setEstat(DocumentEstat.DEFINITIU);
+						//documentPerModificar.setEstat(DocumentEstat.ESBORRANY); // Per poder esborrar-lo de l'Arxiu
+						ContingutArxiu contingutModificat = arxiuPlugin.documentModificar(
+								documentPerModificar);
+						assertNotNull(contingutModificat);
+						System.out.println("Ok");
+						elementsCreats.clear();
+						System.out.println(
+								"2.- Comprovant firmes del document (" +
+								"id=" + documentCreatId + ")... ");
+						Document documentFirmat = arxiuPlugin.documentDetalls(
+								documentCreatId,
+								null,
+								true);
+						documentPerModificar.setNom(documentPerCrear.getNom());
+						documentPerModificar.setMetadades(null);
+						documentFirmat.setMetadades(null);
+						documentFirmat.setContingut(null);
+						documentComprovar(
+								documentPerModificar,
+								documentFirmat,
+								false);
+						System.out.println("Ok");
+						// Neteja la llista d'elemetns creats per evitar que s'intentin esborrar
+					}
+				},
+				expedientPerCrear,
+				documentPerCrear);
+	}
+	
+	@Test
+	public void documentXmlFirmat_TF03_XADES_ENV() throws Exception {
 		System.out.println("TEST: DOCUMENT XML FIRMAT TF03 - XAdES enveloped signature.");
 		String nomExp = "ARXIUAPI_prova_exp_" + System.currentTimeMillis();
 		final Expedient expedientPerCrear = new Expedient();
@@ -1572,7 +1660,7 @@ public class ArxiuPluginCaibTest {
 						firmaXadesEnv.setTipusMime("application/xml");
 						firmaXadesEnv.setContingut(
 								IOUtils.toByteArray(
-										getDocumentAltre("formulari.xml_signed.xsig")));
+										getDocumentAltre("formulari.xml_xades_enveloped.xsig")));
 						documentPerModificar.setFirmes(Arrays.asList(firmaXadesEnv));
 						DocumentMetadades documentMetadadesModificar = new DocumentMetadades();
 						documentMetadadesModificar.setFormat(DocumentFormat.XML);

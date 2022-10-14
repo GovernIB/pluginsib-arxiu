@@ -523,9 +523,7 @@ public class ArxiuConversioHelper {
 		}
 		if (document.getFirmes() != null) {
 			for (Firma firma: document.getFirmes()) {
-				if (!FirmaTipus.CSV.equals(firma.getTipus()) 
-						&& !FirmaTipus.PADES.equals(firma.getTipus())
-						&& !FirmaTipus.XADES_ENV.equals(firma.getTipus())) {
+				if (FirmaTipus.CADES_DET.equals(firma.getTipus())) {
 					Content content = new Content();
 					content.setBinaryType(TiposContenidosBinarios.SIGNATURE);
 					if (firma.getContingut() != null) {
@@ -537,9 +535,7 @@ public class ArxiuConversioHelper {
 						contents = new ArrayList<Content>();
 					}
 					contents.add(content);
-				} else if ((FirmaTipus.PADES.equals(firma.getTipus()) 
-								|| FirmaTipus.XADES_ENV.equals(firma.getTipus()))
-						&& document.getContingut() == null 
+				} else if (document.getContingut() == null 
 						&& firma.getContingut() != null) {
 					// En el cas de les firmes PAdES o XADES_ENV es dona la possibilitat de que
 					// el contingut del PDF firmat s'especifiqui a dins la firma o com
