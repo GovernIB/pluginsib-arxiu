@@ -1662,6 +1662,9 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 			String metadada2,
 			String marcaAigua) throws IOException {
 		String url = getPropertyConversioImprimibleUrl();
+		if (url == null || url.trim().isEmpty()) {
+			throw new ArxiuException("No s'ha definit la propietat plugin.arxiu.caib.conversio.imprimible.url amb la URL del servei de conversió de documents.");
+		}
 		WebResource webResource;
 		if (url.endsWith("/")) {
 			webResource = getVersioImprimibleClient().
