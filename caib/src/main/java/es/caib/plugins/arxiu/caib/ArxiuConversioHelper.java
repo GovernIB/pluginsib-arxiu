@@ -632,8 +632,10 @@ public class ArxiuConversioHelper {
 									firma.setTamany(firma.getContingut().length);
 									firma.setTipusMime(content.getMimetype());
 								} else if ((FirmaTipus.PADES.equals(firmaTipusEnum) 
+											|| FirmaTipus.XADES_DET.equals(firmaTipusEnum)
 											|| FirmaTipus.XADES_ENV.equals(firmaTipusEnum)
-											|| FirmaTipus.CADES_ATT.equals(firmaTipusEnum)) && TiposContenidosBinarios.CONTENT.equals(content.getBinaryType())) {
+											|| FirmaTipus.CADES_ATT.equals(firmaTipusEnum)) 
+										&& TiposContenidosBinarios.CONTENT.equals(content.getBinaryType())) {
 									firma.setContingut(Base64.decode(content.getContent()));
 									firma.setTamany(firma.getContingut().length);
 									firma.setTipusMime(content.getMimetype());

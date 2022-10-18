@@ -1522,7 +1522,7 @@ public class ArxiuPluginCaibTest {
 	
 	@Test
 	public void documentXmlFirmat_TF02_XADES_DET() throws Exception {
-		System.out.println("TEST: DOCUMENT XML FIRMAT TF03 - XAdES dettached.");
+		System.out.println("TEST: DOCUMENT XML FIRMAT TF02 - XAdES dettached.");
 		String nomExp = "ARXIUAPI_prova_exp_" + System.currentTimeMillis();
 		final Expedient expedientPerCrear = new Expedient();
 		expedientPerCrear.setNom(nomExp);
@@ -1567,7 +1567,7 @@ public class ArxiuPluginCaibTest {
 						Document documentPerModificar = new Document();
 						documentPerModificar.setIdentificador(documentCreatId);
 						Firma firmaXadesEnv = new Firma();
-						firmaXadesEnv.setTipus(FirmaTipus.XADES_ENV);
+						firmaXadesEnv.setTipus(FirmaTipus.XADES_DET);
 						firmaXadesEnv.setPerfil(FirmaPerfil.BES);
 						firmaXadesEnv.setTipusMime("application/xml");
 						firmaXadesEnv.setContingut(
