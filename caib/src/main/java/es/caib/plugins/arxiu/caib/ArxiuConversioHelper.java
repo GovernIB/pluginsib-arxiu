@@ -103,13 +103,18 @@ public class ArxiuConversioHelper {
 			return null;
 		}
 		List<ContingutArxiu> informacioItemList = new ArrayList<ContingutArxiu>();
+		ContingutArxiu contingut;
 		for (FileNode fileNode: fileNodeList) {
-			informacioItemList.add(
-					crearContingutArxiu(
-							fileNode.getId(),
-							fileNode.getName(),
-							toContingutTipus(fileNode.getType()),
-							null));
+			contingut = crearContingutArxiu(
+					fileNode.getId(),
+					fileNode.getName(),
+					toContingutTipus(fileNode.getType()),
+					null);
+			if (fileNode.getMetadataCollection() != null) {
+				contingut.setExpedientMetadades(
+						toExpedientMetadades(fileNode.getMetadataCollection()));
+			}
+			informacioItemList.add(contingut);
 		}
 		return informacioItemList;
 	}

@@ -3,18 +3,28 @@
  */
 package es.caib.plugins.arxiu.caib.test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+
+import es.caib.plugins.arxiu.api.ConsultaFiltre;
+import es.caib.plugins.arxiu.api.ConsultaOperacio;
+import es.caib.plugins.arxiu.api.ConsultaResultat;
 import es.caib.plugins.arxiu.api.ContingutArxiu;
 import es.caib.plugins.arxiu.api.Document;
 import es.caib.plugins.arxiu.api.DocumentMetadades;
+import es.caib.plugins.arxiu.api.Expedient;
 import es.caib.plugins.arxiu.api.Firma;
 import es.caib.plugins.arxiu.api.FirmaTipus;
 import es.caib.plugins.arxiu.api.IArxiuPlugin;
@@ -120,5 +130,32 @@ public class ArxiuPluginCaibInfoTest {
 			}
 		}
 	}
+	
+	@Test
+	public void expedientConsulta() throws Exception {
+		
+		List<ConsultaFiltre> filtres = new ArrayList<ConsultaFiltre>();
+		ConsultaFiltre filtreTitol = new ConsultaFiltre();
+		filtreTitol.setMetadada("cm:name");
+		filtreTitol.setOperacio(ConsultaOperacio.CONTE);
+		filtreTitol.setValorOperacio1("GOIBE16660699226902022");
+
+		filtres.add(filtreTitol);
+		
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+		
+		ConsultaResultat consultaResultat = arxiuPlugin.expedientConsulta(filtres, 0, 50);
+		System.out.println("Resultat: " + ow.writeValueAsString(consultaResultat));
+		
+		Expedient expedient;
+		for (ContingutArxiu contingutArxiu : consultaResultat.getResultats()) {
+			expedient = arxiuPlugin.expedientDetalls(contingutArxiu.getIdentificador(), null);
+			assertEquals("Els identificadors de les metadades no són iguals.", 
+							expedient.getMetadades().getIdentificador(), 
+							contingutArxiu.getExpedientMetadades().getIdentificador());
+			
+		}
+	}
+
 
 }
