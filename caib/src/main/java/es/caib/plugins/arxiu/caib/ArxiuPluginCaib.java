@@ -109,6 +109,7 @@ import es.caib.plugins.arxiu.api.ArxiuException;
 import es.caib.plugins.arxiu.api.ArxiuValidacioException;
 import es.caib.plugins.arxiu.api.Carpeta;
 import es.caib.plugins.arxiu.api.ConsultaFiltre;
+import es.caib.plugins.arxiu.api.ConsultaOperacio;
 import es.caib.plugins.arxiu.api.ConsultaResultat;
 import es.caib.plugins.arxiu.api.ContingutArxiu;
 import es.caib.plugins.arxiu.api.ContingutTipus;
@@ -1698,8 +1699,22 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 			String valor1 = filtre.getValorOperacio1();
 			String valor2 = filtre.getValorOperacio2();
 			String metadadaPerFiltre = metadada.replace(":", "\\:");
-			if (filtre.getOperacio() != null) {
-				query.append("+@");
+			ConsultaOperacio consultaOperacio = filtre.getOperacio();
+			if (consultaOperacio != null) {
+				switch(filtre.getOperacio()) {
+				case CONTE:
+				case ENTRE:
+				case IGUAL:
+				case MAJOR:
+				case MENOR:
+					query.append("+");
+					break;
+				case NO_CONTE:
+				case NO_IGUAL:
+					query.append("-");
+					break;
+				}
+				query.append("@");
 				switch(filtre.getOperacio()) {
 					case IGUAL:
 						query.append(metadadaPerFiltre);
@@ -1724,6 +1739,14 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 					case ENTRE:
 						query.append(metadadaPerFiltre);
 						query.append(":[" + valor1 + " TO " + valor2 + "]");
+						break;
+					case NO_IGUAL:
+						query.append(metadadaPerFiltre);
+						query.append(":\"" + valor1 + "\"");
+						break;
+					case NO_CONTE:
+						query.append(metadadaPerFiltre);
+						query.append(":*" + valor1 + "*");
 						break;
 				}
 				if (i < filtres.size()-1) {

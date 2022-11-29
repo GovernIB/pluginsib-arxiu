@@ -5,6 +5,7 @@ package es.caib.plugins.arxiu.caib.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -134,17 +135,32 @@ public class ArxiuPluginCaibInfoTest {
 	@Test
 	public void expedientConsulta() throws Exception {
 		
+		String conte = "prova";
 		List<ConsultaFiltre> filtres = new ArrayList<ConsultaFiltre>();
 		ConsultaFiltre filtreTitol = new ConsultaFiltre();
 		filtreTitol.setMetadada("cm:name");
 		filtreTitol.setOperacio(ConsultaOperacio.CONTE);
-		filtreTitol.setValorOperacio1("GOIBE16660699226902022");
-
+		//filtreTitol.setValorOperacio1("ARXIUAPI_prova_exp_1668096784615");
+		filtreTitol.setValorOperacio1(conte);
 		filtres.add(filtreTitol);
 		
-		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+		String no_conte = "exp";
+		ConsultaFiltre filtreNoConte = new ConsultaFiltre();
+		filtreNoConte.setMetadada("cm:name");
+		filtreNoConte.setOperacio(ConsultaOperacio.NO_CONTE);
+		filtreNoConte.setValorOperacio1(no_conte);
+		filtres.add(filtreNoConte);
 		
 		ConsultaResultat consultaResultat = arxiuPlugin.expedientConsulta(filtres, 0, 50);
+		
+		// Comprova que el nom contingui conte i no contingui no_conte
+		for (ContingutArxiu contingut : consultaResultat.getResultats()) {
+			assertTrue(
+					"El nom \"" + contingut.getNom() + "\" no conté \"" + conte + "\" o conté \"" + no_conte + "\"" , 
+					contingut.getNom().contains(conte) && !contingut.getNom().contains(no_conte));
+		}
+
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 		System.out.println("Resultat: " + ow.writeValueAsString(consultaResultat));
 		
 		Expedient expedient;

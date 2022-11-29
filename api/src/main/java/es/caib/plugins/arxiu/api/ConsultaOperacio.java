@@ -13,5 +13,7 @@ public enum ConsultaOperacio {
 	CONTE,
 	MENOR,
 	MAJOR,
-	ENTRE
+	ENTRE,
+	NO_IGUAL,
+	NO_CONTE
 }
