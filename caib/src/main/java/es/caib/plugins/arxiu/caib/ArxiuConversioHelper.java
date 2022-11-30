@@ -106,9 +106,9 @@ public class ArxiuConversioHelper {
 		ContingutArxiu contingut;
 		for (FileNode fileNode: fileNodeList) {
 			contingut = crearContingutArxiu(
-					fileNode.getId(),
-					fileNode.getName(),
-					toContingutTipus(fileNode.getType()),
+							fileNode.getId(),
+							fileNode.getName(),
+							toContingutTipus(fileNode.getType()),
 					null);
 			if (fileNode.getMetadataCollection() != null) {
 				contingut.setExpedientMetadades(
@@ -697,6 +697,8 @@ public class ArxiuConversioHelper {
 					metadades.setCsvDef((String)metadata.getValue());
 				} else if (MetadatosDocumento.ID_ORIGEN.equals(metadata.getQname())) {
 					metadades.setIdentificadorOrigen(metadata.getValue().toString());
+				} else if (MetadatosExpediente.CODIGO_CLASIFICACION.equals(metadata.getQname())) {
+					metadades.setSerieDocumental(metadata.getValue().toString());
 				} else {
 					Map<String, Object> metadadesAddicionals = metadades.getMetadadesAddicionals();
 					if (metadadesAddicionals == null) {
