@@ -1100,9 +1100,7 @@ public class ArxiuPluginCaibTest {
 						documentMetadades.setTipusDocumental(DocumentTipus.ALTRES);
 						documentMetadades.setFormat(DocumentFormat.PDF);
 						documentMetadades.setExtensio(DocumentExtensio.PDF);
-						documentMetadades.addMetadadaAddicional(
-								MetadatosDocumento.CODIGO_CLASIFICACION,
-								SERIE_DOCUMENTAL);
+						documentMetadades.setSerieDocumental(SERIE_DOCUMENTAL);
 						documentPerCrear.setMetadades(documentMetadades);
 						documentPerCrear.setEstat(DocumentEstat.ESBORRANY);
 						System.out.println(
@@ -1123,8 +1121,7 @@ public class ArxiuPluginCaibTest {
 								true);
 						assertNotNull(documentDetalls.getMetadades());
 						assertNotNull(documentDetalls.getMetadades().getMetadadesAddicionals());
-						Object serieDocumental = documentDetalls.getMetadades().getMetadadesAddicionals().get(
-								MetadatosDocumento.CODIGO_CLASIFICACION);
+						Object serieDocumental = documentDetalls.getMetadades().getSerieDocumental();
 						assertNotNull(serieDocumental);
 						System.out.println("Ok (" + serieDocumental + ")");
 					}

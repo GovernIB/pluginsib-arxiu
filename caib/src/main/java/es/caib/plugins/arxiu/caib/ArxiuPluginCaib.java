@@ -1452,11 +1452,10 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 	private String findSerieDocumentalExpedientPare(
 			Document document,
 			String identificadorPare) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException, UniformInterfaceException, ClientHandlerException, IOException {
-		if (document != null && document.getMetadades() != null && document.getMetadades().getMetadadesAddicionals() != null) {
-			Map<String, Object> metadadesAddicionals = document.getMetadades().getMetadadesAddicionals();
-			Object serieDocumental = metadadesAddicionals.get(MetadatosDocumento.CODIGO_CLASIFICACION);
+		if (document != null && document.getMetadades() != null) {
+			String serieDocumental = document.getMetadades().getSerieDocumental();
 			if (serieDocumental != null) {
-				return (String)serieDocumental;
+				return serieDocumental;
 			}
 		}
 		
