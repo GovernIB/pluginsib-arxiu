@@ -10,8 +10,10 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -25,6 +27,7 @@ import es.caib.plugins.arxiu.api.ConsultaResultat;
 import es.caib.plugins.arxiu.api.ContingutArxiu;
 import es.caib.plugins.arxiu.api.Document;
 import es.caib.plugins.arxiu.api.DocumentMetadades;
+import es.caib.plugins.arxiu.api.DocumentRepositori;
 import es.caib.plugins.arxiu.api.Expedient;
 import es.caib.plugins.arxiu.api.Firma;
 import es.caib.plugins.arxiu.api.FirmaTipus;
@@ -135,31 +138,15 @@ public class ArxiuPluginCaibInfoTest {
 	@Test
 	public void expedientConsulta() throws Exception {
 		
-		String conte = "prova";
 		List<ConsultaFiltre> filtres = new ArrayList<ConsultaFiltre>();
 		ConsultaFiltre filtreTitol = new ConsultaFiltre();
 		filtreTitol.setMetadada("cm:name");
-		filtreTitol.setOperacio(ConsultaOperacio.CONTE);
-		//filtreTitol.setValorOperacio1("ARXIUAPI_prova_exp_1668096784615");
-		filtreTitol.setValorOperacio1(conte);
+		filtreTitol.setOperacio(ConsultaOperacio.IGUAL);
+		filtreTitol.setValorOperacio1("ARXIUAPI_prova_exp_1668096784615");
 		filtres.add(filtreTitol);
-		
-		String no_conte = "exp";
-		ConsultaFiltre filtreNoConte = new ConsultaFiltre();
-		filtreNoConte.setMetadada("cm:name");
-		filtreNoConte.setOperacio(ConsultaOperacio.NO_CONTE);
-		filtreNoConte.setValorOperacio1(no_conte);
-		filtres.add(filtreNoConte);
-		
+			
 		ConsultaResultat consultaResultat = arxiuPlugin.expedientConsulta(filtres, 0, 50);
 		
-		// Comprova que el nom contingui conte i no contingui no_conte
-		for (ContingutArxiu contingut : consultaResultat.getResultats()) {
-			assertTrue(
-					"El nom \"" + contingut.getNom() + "\" no conté \"" + conte + "\" o conté \"" + no_conte + "\"" , 
-					contingut.getNom().contains(conte) && !contingut.getNom().contains(no_conte));
-		}
-
 		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 		System.out.println("Resultat: " + ow.writeValueAsString(consultaResultat));
 		
@@ -172,6 +159,173 @@ public class ArxiuPluginCaibInfoTest {
 			
 		}
 	}
+	
+	@Test
+	public void expedientConsultaFiltrada() throws Exception {
+		
+		String conte = "prova"; 
+		List<ConsultaFiltre> filtres = new ArrayList<ConsultaFiltre>();
+		ConsultaFiltre filtreTitol = new ConsultaFiltre();
+		filtreTitol.setMetadada("cm:name");
+		filtreTitol.setOperacio(ConsultaOperacio.CONTE);
+		filtreTitol.setValorOperacio1(conte);
+		filtres.add(filtreTitol);
+		
+		String no_conte = "xxx";
+		ConsultaFiltre filtreNoConte = new ConsultaFiltre();
+		filtreNoConte.setMetadada("cm:name");
+		filtreNoConte.setOperacio(ConsultaOperacio.NO_CONTE);
+		filtreNoConte.setValorOperacio1(no_conte);
+		filtres.add(filtreNoConte);
+		
+		ConsultaResultat consultaResultat = arxiuPlugin.expedientConsulta(
+				filtres, 0, 50);
+		
+		// Comprova que el nom contingui conte i no contingui no_conte
+		for (ContingutArxiu contingut : consultaResultat.getResultats()) {
+			assertTrue(
+					"El nom \"" + contingut.getNom() + "\" no conté \"" + conte + "\" o conté \"" + no_conte + "\"" , 
+					contingut.getNom().contains(conte) && !contingut.getNom().contains(no_conte));
+		}
+	}
+	
+	@Test
+	public void expedientConsultaPaginada() throws Exception {
+		
+		String conte = "prova"; 
+		List<ConsultaFiltre> filtres = new ArrayList<ConsultaFiltre>();
+		ConsultaFiltre filtreTitol = new ConsultaFiltre();
+		filtreTitol.setMetadada("cm:name");
+		filtreTitol.setOperacio(ConsultaOperacio.CONTE);
+		filtreTitol.setValorOperacio1(conte);
+		filtres.add(filtreTitol);
+		
+		Integer[] itemsPerPaginaArray = new Integer[] {47, 50, 100, 500};	
+        for (int i = 0; i < itemsPerPaginaArray.length; i++) {
+            Integer itemsPerPagina = itemsPerPaginaArray[i];
+            System.out.println("\n- Prova consulta pàginada " + i + " amb grandària de pàgina " + itemsPerPagina + "\n");
+            
+            Integer pagina = 0;
+            
+    		ConsultaResultat consultaResultat;
+    		boolean fi = false;
+    		Set<String> identificadors = new HashSet<>();
+    		do {
+    			consultaResultat = arxiuPlugin.expedientConsulta(
+    					filtres, 
+    					pagina, 
+    					itemsPerPagina);
+    			
+    			System.out.println("Resposta a la petició de la pàgina " + pagina 
+    					+ ": {numPagines: " + consultaResultat.getNumPagines() 
+    					+ ", numRegistres: " + consultaResultat.getNumRegistres() 
+    					+ ", numRetornat: " + consultaResultat.getNumRetornat() 
+    					+ ", paginaActual: " + consultaResultat.getPaginaActual() 
+    					+ ", resultat.size: " + consultaResultat.getResultats().size() + "}");
+    			
+    			// Comprova la paginació
+    			assertTrue("S'ha demanat una pàgina que no és la sol·licitada", pagina.equals(consultaResultat.getPaginaActual()));
+    			assertTrue("S'han retornat més resultats que els demanats per pàgina", itemsPerPagina >= consultaResultat.getNumRetornat());
+    			assertTrue("La grandària del llistat resultant " + consultaResultat.getResultats().size() + " no concorda amb el número de resultats retornat " + consultaResultat.getNumRetornat(), 
+    					consultaResultat.getResultats().size() == consultaResultat.getNumRetornat().intValue());
+    			assertTrue("El total de pàgines " + consultaResultat.getNumPagines() + " no concorda amb el total de la consulta " + consultaResultat.getNumRegistres(), 
+    					(consultaResultat.getNumPagines() * itemsPerPagina >= consultaResultat.getNumRegistres())
+    					&& ((consultaResultat.getNumPagines() - 1) * itemsPerPagina < consultaResultat.getNumRegistres()));
+    			
+    			for (ContingutArxiu contingutArxiu : consultaResultat.getResultats()) {
+    				assertTrue("El resultat no pot retornar un contingut retornat anteriorment: " + contingutArxiu.getIdentificador(), !identificadors.contains(contingutArxiu.getIdentificador()));
+    				identificadors.add(contingutArxiu.getIdentificador());
+    			}
 
+    			fi = (pagina+1)*itemsPerPagina > consultaResultat.getNumRegistres();			
+    			pagina++;
+    		} while (!fi);
+        }
+	}
 
+	@Test
+	public void expedientConsultaSensePaginar() throws Exception {
+		
+		String conte = "prova"; 
+		List<ConsultaFiltre> filtres = new ArrayList<ConsultaFiltre>();
+		ConsultaFiltre filtreTitol = new ConsultaFiltre();
+		filtreTitol.setMetadada("cm:name");
+		filtreTitol.setOperacio(ConsultaOperacio.CONTE);
+		filtreTitol.setValorOperacio1(conte);
+		filtres.add(filtreTitol);
+				
+		Integer pagina = null;
+        Integer itemsPerPagina = null;
+
+		ConsultaResultat consultaResultat = arxiuPlugin.expedientConsulta(
+				filtres, pagina, itemsPerPagina);
+		
+		System.out.println("Resposta a la petició de la pàgina " + pagina 
+				+ ": {numPagines: " + consultaResultat.getNumPagines() 
+				+ ", numRegistres: " + consultaResultat.getNumRegistres() 
+				+ ", numRetornat: " + consultaResultat.getNumRetornat() 
+				+ ", paginaActual: " + consultaResultat.getPaginaActual() 
+				+ ", resultat.size: " + consultaResultat.getResultats().size() + "}");
+
+		
+		assertTrue("El número total i retornat han de coincidir", consultaResultat.getResultats().size() == consultaResultat.getNumRegistres());
+	}
+	
+	@Test
+	public void documentConsultaFiltradaPaginada() throws Exception {
+		
+		String conte = "prova"; 
+		List<ConsultaFiltre> filtres = new ArrayList<ConsultaFiltre>();
+		ConsultaFiltre filtreTitol = new ConsultaFiltre();
+		filtreTitol.setMetadada("cm:name");
+		filtreTitol.setOperacio(ConsultaOperacio.CONTE);
+		filtreTitol.setValorOperacio1(conte);
+		filtres.add(filtreTitol);
+		
+		String no_conte = "xxx";
+		ConsultaFiltre filtreNoConte = new ConsultaFiltre();
+		filtreNoConte.setMetadada("cm:name");
+		filtreNoConte.setOperacio(ConsultaOperacio.NO_CONTE);
+		filtreNoConte.setValorOperacio1(no_conte);
+		filtres.add(filtreNoConte);
+		
+		Integer pagina = 0;
+        Integer itemsPerPagina = 50;
+        
+        
+		ConsultaResultat consultaResultat;
+		boolean fi = false;
+		Set<String> identificadors = new HashSet<>();
+		do {
+			consultaResultat = arxiuPlugin.documentConsulta(
+					filtres, 
+					pagina, 
+					itemsPerPagina, 
+					DocumentRepositori.ENI_DOCUMENTO);
+			
+			System.out.println("Resposta a la petició de la pàgina " + pagina 
+					+ ": {numPagines: " + consultaResultat.getNumPagines() 
+					+ ", numRegistres: " + consultaResultat.getNumRegistres() 
+					+ ", numRetornat: " + consultaResultat.getNumRetornat() 
+					+ ", paginaActual: " + consultaResultat.getPaginaActual() 
+					+ ", resultat.size: " + consultaResultat.getResultats().size() + "}");
+			
+			// Comprova la paginació
+			assertTrue("S'ha demanat una pàgina que no és la sol·licitada", pagina.equals(consultaResultat.getPaginaActual()));
+			assertTrue("S'han retornat més resultats que els demanats per pàgina", itemsPerPagina >= consultaResultat.getNumRetornat());
+			assertTrue("La grandària del llistat resultant " + consultaResultat.getResultats().size() + " no concorda amb el número de resultats retornat " + consultaResultat.getNumRetornat(), 
+					consultaResultat.getResultats().size() == consultaResultat.getNumRetornat().intValue());
+			assertTrue("El total de pàgines " + consultaResultat.getNumPagines() + " no concorda amb el total de la consulta " + consultaResultat.getNumRegistres(), 
+					(consultaResultat.getNumPagines() * itemsPerPagina >= consultaResultat.getNumRegistres())
+					&& ((consultaResultat.getNumPagines() - 1) * itemsPerPagina < consultaResultat.getNumRegistres()));
+			
+			for (ContingutArxiu contingutArxiu : consultaResultat.getResultats()) {
+				assertTrue("El resultat no pot retornar un contingut retornat anteriorment: " + contingutArxiu.getIdentificador(), !identificadors.contains(contingutArxiu.getIdentificador()));
+				identificadors.add(contingutArxiu.getIdentificador());
+			}
+
+			fi = (pagina+1)*itemsPerPagina > consultaResultat.getNumRegistres();			
+			pagina++;
+		} while (!fi);
+	}
 }

@@ -29,6 +29,7 @@ import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.DocumentId;
 import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.DocumentNode;
 import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.FileNode;
 import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.Metadata;
+import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.RespuestaFileSearch;
 import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.TargetNode;
 import es.caib.arxiudigital.apirest.CSGD.entidades.comunes.VersionNode;
 import es.caib.arxiudigital.apirest.CSGD.entidades.parametrosLlamada.ParamCreateChildFile;
@@ -149,6 +150,8 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 	private ArxiuCaibClient arxiuClient;
 	private Client versioImprimibleClient;
 
+	/** Propietat amb el número d'elements màxim retornats per l'Arxiu en les consultes pàginades */
+	protected int itemsPerPaginaArxiu = 50;
 
 
 	public ArxiuPluginCaib() {
@@ -333,51 +336,92 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 					ex);
 		}
 	}
-
+	
 	@Override
 	public ConsultaResultat expedientConsulta(
 			final List<ConsultaFiltre> filtres,
 			final Integer pagina,
 			final Integer itemsPerPagina) throws ArxiuException {
 		String metode = Servicios.SEARCH_FILE;
-		try {
-			List<ContingutArxiu> resultatConsulta = new ArrayList<ContingutArxiu>();
-			List<ContingutArxiu> continguts = null;
-			while (continguts == null || continguts.size() == NUM_PAGINES_RESULTAT_CERCA) {
-				SearchFilesResult resposta = getArxiuClient().generarEnviarPeticio(
-						metode,
-						SearchFiles.class,
-						new GeneradorParam<ParamSearch>() {
-							@Override
-							public ParamSearch generar() {
-								ParamSearch param = new ParamSearch();
-								String query = generarConsulta(
-										QUERY_TYPE_ENI_EXPEDIENTE,
-										filtres);
-								param.setQuery(query);
-								param.setPageNumber(pagina);
-								return param;
-							}
-						},
-						ParamSearch.class,
-						SearchFilesResult.class);
-				List<FileNode> files = new ArrayList<FileNode>();
-				if (	resposta.getSearchFilesResult().getResParam() != null &&
-						resposta.getSearchFilesResult().getResParam().getFiles() != null) {
-					files = resposta.getSearchFilesResult().getResParam().getFiles();
-				}
-				continguts = ArxiuConversioHelper.fileNodesToFileContingutArxiu(files);
-				resultatConsulta.addAll(continguts);
+		try {			
+			int numRegistres = 0; 
+			int numPagines = 0;
+			int numRetornat = 0; 
+			int paginaActual = 0;
+			List<ContingutArxiu> resultats = new ArrayList<ContingutArxiu>();
+			
+			SearchFilesResult resposta;
+			int nPagina;
+			if (pagina != null && itemsPerPagina != null) {
+				
+				// Consulta paginada
+				
+				int paginaInici = pagina*itemsPerPagina / itemsPerPaginaArxiu;
+				int indexInici = pagina*itemsPerPagina % itemsPerPaginaArxiu;
+				int paginaFi = ((pagina+1)*itemsPerPagina-1) / itemsPerPaginaArxiu;
+				int indexFi = ((pagina+1)*itemsPerPagina-1) % itemsPerPaginaArxiu + 1;
+				
+				nPagina = paginaInici;
+				do {
+					resposta = this.consultaPaginada(
+							metode,
+							SearchFiles.class,
+							QUERY_TYPE_ENI_EXPEDIENTE,
+							filtres,
+							nPagina);
+
+					RespuestaFileSearch respostaFileSearch = resposta.getSearchFilesResult().getResParam();
+					if ( respostaFileSearch != null && respostaFileSearch.getFiles() != null) {
+						List<FileNode> files = respostaFileSearch.getFiles();
+						
+						int iInici = nPagina == paginaInici ? indexInici : 0;
+						int iFi = Math.min(nPagina == paginaFi ? indexFi : itemsPerPaginaArxiu, files.size()); 
+						resultats.addAll(ArxiuConversioHelper.fileNodesToFileContingutArxiu(files.subList(iInici, iFi)));
+					}
+					numRegistres = respostaFileSearch.getTotalNumberOfResults();
+					nPagina++;
+				} while (nPagina <= paginaFi && (nPagina - paginaInici) <= NUM_PAGINES_RESULTAT_CERCA);
+
+				numRetornat = resultats.size();
+				numPagines = numRegistres / itemsPerPagina + (numRegistres % itemsPerPagina == 0 ? 0 : 1);
+				paginaActual = pagina;
+	
+			} else {
+				// Consulta sense paginar
+				boolean retornaResultats = false;
+				nPagina = 0;
+				do {
+					resposta = this.consultaPaginada(
+							metode,
+							SearchFiles.class,
+							QUERY_TYPE_ENI_EXPEDIENTE,
+							filtres,
+							nPagina++);
+
+					RespuestaFileSearch respostaFileSearch = resposta.getSearchFilesResult().getResParam();
+					if ( respostaFileSearch.getFiles() != null) {
+						List<FileNode> files = respostaFileSearch.getFiles();
+						resultats.addAll(ArxiuConversioHelper.fileNodesToFileContingutArxiu(files));
+						retornaResultats = files.size() > 0;
+					} else {
+						retornaResultats = false;
+					}
+					
+				} 
+				while ( retornaResultats && nPagina <= NUM_PAGINES_RESULTAT_CERCA);
+
+				numRegistres = resultats.size();
+				numRetornat = numRegistres;
+				numPagines = (numRegistres > 0 ? 1 : 0);
+				paginaActual = 0;
 			}
-			int fromIndex = pagina.intValue() * itemsPerPagina.intValue();
-			int toIndex = (pagina.intValue() + 1) * itemsPerPagina.intValue();
-			if (toIndex > resultatConsulta.size()) toIndex = resultatConsulta.size();
+
 			return new ConsultaResultat(
-					itemsPerPagina,
-					new Integer(resultatConsulta.size() / itemsPerPagina.intValue()),
-					new Integer(resultatConsulta.size()),
-					pagina,
-					resultatConsulta.size() == 0 ? new ArrayList<ContingutArxiu>() : resultatConsulta.subList(fromIndex, toIndex));
+					numRegistres,
+					numPagines,
+					numRetornat,
+					paginaActual,
+					resultats);
 		} catch (ArxiuException aex) {
 			throw aex;
 		} catch (Exception ex) {
@@ -385,6 +429,58 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 					"S'ha produit un error cridant el mètode " + metode,
 					ex);
 		}
+	}
+
+	private SearchFilesResult consultaPaginada(
+			String metode, 
+			Class<SearchFiles> peticioType, 
+			final String queryTypeEni,
+			final List<ConsultaFiltre> filtres, 
+			final Integer pagina) throws Exception {
+		
+		SearchFilesResult resposta = getArxiuClient().generarEnviarPeticio(
+				metode,
+				peticioType,
+				new GeneradorParam<ParamSearch>() {
+					@Override
+					public ParamSearch generar() {
+						ParamSearch param = new ParamSearch();
+						String query = generarConsulta(
+								queryTypeEni,
+								filtres);
+						param.setQuery(query);
+						param.setPageNumber(pagina);
+						return param;
+					}
+				},
+				ParamSearch.class,
+				SearchFilesResult.class);
+		
+//		if (	resposta.getSearchFilesResult() != null 
+//				&& resposta.getSearchFilesResult().getResParam() != null
+//				&& resposta.getSearchFilesResult().getResParam().getFiles() != null ) {
+//			
+//			int filesLength = resposta.getSearchFilesResult().getResParam().getFiles().size();
+//			int pageNumber = resposta.getSearchFilesResult().getResParam().getPageNumber();
+//			int totalNumberOfResults = resposta.getSearchFilesResult().getResParam().getTotalNumberOfResults();
+//			
+//			// Revisa que la grandària de pàgina de l'Arxiu quadri
+//			if (totalNumberOfResults < pageNumber * this.itemsPerPaginaArxiu + filesLength
+//					|| (pageNumber == 0 
+//							&& this.itemsPerPaginaArxiu < totalNumberOfResults 
+//							&& this.itemsPerPaginaArxiu != filesLength)) {
+//				logger.warn("S'ha detectat que la grandària de pàgina estimada " + this.itemsPerPaginaArxiu + 
+//						" no pot ser correcta per la la pàgina " + pageNumber + " amb un total de " + totalNumberOfResults + 
+//						" i " + filesLength + " resultats retornats.");
+//				if (pageNumber == 0) {
+//					this.itemsPerPaginaArxiu = filesLength;
+//				} else {
+//					
+//				}
+//			}
+//		}
+		
+		return resposta;
 	}
 
 	@Override
