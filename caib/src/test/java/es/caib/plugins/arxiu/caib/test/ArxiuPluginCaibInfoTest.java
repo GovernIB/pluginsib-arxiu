@@ -203,7 +203,10 @@ public class ArxiuPluginCaibInfoTest {
 		Integer[] itemsPerPaginaArray = new Integer[] {47, 50, 100, 500};	
         for (int i = 0; i < itemsPerPaginaArray.length; i++) {
             Integer itemsPerPagina = itemsPerPaginaArray[i];
-            System.out.println("\n- Prova consulta pàginada " + i + " amb grandària de pàgina " + itemsPerPagina + "\n");
+            System.out.println("\n- Prova consulta pàginada d'expedients " + i + " amb grandària de pàgina " + itemsPerPagina + "\n");
+
+            // Desajusta expressament la grandària estimada de la pàgina de l'Arxiu per provar de reajustar.
+            ((ArxiuPluginCaib) arxiuPlugin).setItemsPerPaginaArxiu(itemsPerPagina);
             
             Integer pagina = 0;
             
@@ -260,7 +263,7 @@ public class ArxiuPluginCaibInfoTest {
 		ConsultaResultat consultaResultat = arxiuPlugin.expedientConsulta(
 				filtres, pagina, itemsPerPagina);
 		
-		System.out.println("Resposta a la petició de la pàgina " + pagina 
+		System.out.println("Resposta a la petició de la pàgina d'expedients " + pagina 
 				+ ": {numPagines: " + consultaResultat.getNumPagines() 
 				+ ", numRegistres: " + consultaResultat.getNumRegistres() 
 				+ ", numRetornat: " + consultaResultat.getNumRetornat() 
@@ -289,43 +292,75 @@ public class ArxiuPluginCaibInfoTest {
 		filtreNoConte.setValorOperacio1(no_conte);
 		filtres.add(filtreNoConte);
 		
-		Integer pagina = 0;
-        Integer itemsPerPagina = 50;
-        
-        
-		ConsultaResultat consultaResultat;
-		boolean fi = false;
-		Set<String> identificadors = new HashSet<>();
-		do {
-			consultaResultat = arxiuPlugin.documentConsulta(
-					filtres, 
-					pagina, 
-					itemsPerPagina, 
-					DocumentRepositori.ENI_DOCUMENTO);
-			
-			System.out.println("Resposta a la petició de la pàgina " + pagina 
-					+ ": {numPagines: " + consultaResultat.getNumPagines() 
-					+ ", numRegistres: " + consultaResultat.getNumRegistres() 
-					+ ", numRetornat: " + consultaResultat.getNumRetornat() 
-					+ ", paginaActual: " + consultaResultat.getPaginaActual() 
-					+ ", resultat.size: " + consultaResultat.getResultats().size() + "}");
-			
-			// Comprova la paginació
-			assertTrue("S'ha demanat una pàgina que no és la sol·licitada", pagina.equals(consultaResultat.getPaginaActual()));
-			assertTrue("S'han retornat més resultats que els demanats per pàgina", itemsPerPagina >= consultaResultat.getNumRetornat());
-			assertTrue("La grandària del llistat resultant " + consultaResultat.getResultats().size() + " no concorda amb el número de resultats retornat " + consultaResultat.getNumRetornat(), 
-					consultaResultat.getResultats().size() == consultaResultat.getNumRetornat().intValue());
-			assertTrue("El total de pàgines " + consultaResultat.getNumPagines() + " no concorda amb el total de la consulta " + consultaResultat.getNumRegistres(), 
-					(consultaResultat.getNumPagines() * itemsPerPagina >= consultaResultat.getNumRegistres())
-					&& ((consultaResultat.getNumPagines() - 1) * itemsPerPagina < consultaResultat.getNumRegistres()));
-			
-			for (ContingutArxiu contingutArxiu : consultaResultat.getResultats()) {
-				assertTrue("El resultat no pot retornar un contingut retornat anteriorment: " + contingutArxiu.getIdentificador(), !identificadors.contains(contingutArxiu.getIdentificador()));
-				identificadors.add(contingutArxiu.getIdentificador());
-			}
+		Integer[] itemsPerPaginaArray = new Integer[] {47, 50, 100, 500};	
+        for (int i = 0; i < itemsPerPaginaArray.length; i++) {
+            Integer itemsPerPagina = itemsPerPaginaArray[i];
+            // Desajusta expressament la grandària estimada de la pàgina de l'Arxiu per provar de reajustar.
+            ((ArxiuPluginCaib) arxiuPlugin).setItemsPerPaginaArxiu(itemsPerPagina);
+            System.out.println("\n- Prova consulta pàginada de documents " + i + " amb grandària de pàgina " + itemsPerPagina + "\n");
+    		Integer pagina = 0;
+    		ConsultaResultat consultaResultat;
+    		boolean fi = false;
+    		Set<String> identificadors = new HashSet<>();
+    		do {
+    			consultaResultat = arxiuPlugin.documentConsulta(
+    					filtres, 
+    					pagina, 
+    					itemsPerPagina, 
+    					DocumentRepositori.ENI_DOCUMENTO);
+    			
+    			System.out.println("Resposta a la petició de la pàgina " + pagina 
+    					+ ": {numPagines: " + consultaResultat.getNumPagines() 
+    					+ ", numRegistres: " + consultaResultat.getNumRegistres() 
+    					+ ", numRetornat: " + consultaResultat.getNumRetornat() 
+    					+ ", paginaActual: " + consultaResultat.getPaginaActual() 
+    					+ ", resultat.size: " + consultaResultat.getResultats().size() + "}");
+    			
+    			// Comprova la paginació
+    			assertTrue("S'ha demanat una pàgina que no és la sol·licitada", pagina.equals(consultaResultat.getPaginaActual()));
+    			assertTrue("S'han retornat més resultats que els demanats per pàgina", itemsPerPagina >= consultaResultat.getNumRetornat());
+    			assertTrue("La grandària del llistat resultant " + consultaResultat.getResultats().size() + " no concorda amb el número de resultats retornat " + consultaResultat.getNumRetornat(), 
+    					consultaResultat.getResultats().size() == consultaResultat.getNumRetornat().intValue());
+    			assertTrue("El total de pàgines " + consultaResultat.getNumPagines() + " no concorda amb el total de la consulta " + consultaResultat.getNumRegistres(), 
+    					(consultaResultat.getNumPagines() * itemsPerPagina >= consultaResultat.getNumRegistres())
+    					&& ((consultaResultat.getNumPagines() - 1) * itemsPerPagina < consultaResultat.getNumRegistres()));
+    			
+    			for (ContingutArxiu contingutArxiu : consultaResultat.getResultats()) {
+    				assertTrue("El resultat no pot retornar un contingut retornat anteriorment: " + contingutArxiu.getIdentificador(), !identificadors.contains(contingutArxiu.getIdentificador()));
+    				identificadors.add(contingutArxiu.getIdentificador());
+    			}
 
-			fi = (pagina+1)*itemsPerPagina > consultaResultat.getNumRegistres();			
-			pagina++;
-		} while (!fi);
+    			fi = (pagina+1)*itemsPerPagina > consultaResultat.getNumRegistres();			
+    			pagina++;
+    		} while (!fi);    		
+        }
+	}
+	
+	@Test
+	public void documentConsultaSensePaginar() throws Exception {
+		
+		String conte = "prova"; 
+		List<ConsultaFiltre> filtres = new ArrayList<ConsultaFiltre>();
+		ConsultaFiltre filtreTitol = new ConsultaFiltre();
+		filtreTitol.setMetadada("cm:name");
+		filtreTitol.setOperacio(ConsultaOperacio.CONTE);
+		filtreTitol.setValorOperacio1(conte);
+		filtres.add(filtreTitol);
+				
+		Integer pagina = null;
+        Integer itemsPerPagina = null;
+
+		ConsultaResultat consultaResultat = arxiuPlugin.documentConsulta(
+				filtres, pagina, itemsPerPagina, DocumentRepositori.ENI_DOCUMENTO);
+		
+		System.out.println("Resposta a la petició de la pàgina de documents " + pagina 
+				+ ": {numPagines: " + consultaResultat.getNumPagines() 
+				+ ", numRegistres: " + consultaResultat.getNumRegistres() 
+				+ ", numRetornat: " + consultaResultat.getNumRetornat() 
+				+ ", paginaActual: " + consultaResultat.getPaginaActual() 
+				+ ", resultat.size: " + consultaResultat.getResultats().size() + "}");
+
+		
+		assertTrue("El número total i retornat han de coincidir", consultaResultat.getResultats().size() == consultaResultat.getNumRegistres());
 	}
 }
