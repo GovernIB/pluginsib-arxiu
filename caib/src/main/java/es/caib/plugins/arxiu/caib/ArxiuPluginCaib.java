@@ -890,7 +890,12 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 		try {
 			String versioResposta = null;
 			if (versio == null) {
-				versioResposta = documentDarreraVersio(identificador);
+				try {
+					versioResposta = documentDarreraVersio(identificador);
+				} catch (Exception e) {
+					logger.warn("Error al consultar darrera versió de document", e.getMessage());
+					versioResposta = "-";
+				}
 			} else {
 				versioResposta = versio;
 			}
