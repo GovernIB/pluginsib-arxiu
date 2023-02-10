@@ -3,7 +3,10 @@
 
 ***Versions***
 
-> - Versió Estable: [PLUGINSIB-ARXIU 2.0.25.1](../../releases/tag/v2.0.25.1). Aquesta versió permet guardar documents firmats TF04 la qual cosa no és recomanable per la versió actual de l'Arxiu Digital CAIB, es recomana la versió 2.0.19.
+> - Versió Estable: [PLUGINSIB-ARXIU 2.0.25.1](../../releases/tag/v2.0.25.1). AVÍS: Tot i que aquesta versió permet guardar documents firmats cades detached (TF04), de moment no es recomana per la versió actual de l'Arxiu Digital CAIB
+>   - API v2.0.25
+>   - Arxiu CAIB v2.0.25.1
+>   - Filesystem 2.0.23
 > - Branca activa: __pluginsib-arxiu-2.0__ (branca [pluginsib-arxiu-2.0](../../tree/pluginsib-arxiu-2.0))
 
 ***Descripció***
