@@ -23,6 +23,10 @@ public class ContingutArxiu {
 	protected ExpedientMetadades expedientMetadades;
 	protected DocumentMetadades documentMetadades;
 	
+	public ContingutArxiu() {
+		super();
+	}
+	
 	public ContingutArxiu(ContingutTipus tipus) {
 		super();
 		this.tipus = tipus;

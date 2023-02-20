@@ -13,6 +13,10 @@ public class DocumentTipusAddicional {
 	private String codi;
 	private String descripcio;
 
+	public DocumentTipusAddicional() {
+		super();
+	}
+
 	public DocumentTipusAddicional(String codi, String descripcio) {
 		super();
 		this.codi = codi;
