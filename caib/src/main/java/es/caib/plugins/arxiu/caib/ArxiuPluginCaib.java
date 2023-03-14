@@ -1946,7 +1946,9 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 					getPropertyUsuari(),
 					getPropertyContrasenya(),
 					getPropertyTimeoutConnect(),
-					getPropertyTimeoutRead(), isDebug());
+					getPropertyTimeoutRead(), 
+					isDebug(),
+					loggerLevel());
 		}
 		return arxiuClient;
 	}
@@ -2003,8 +2005,16 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 		return getProperty(ARXIUCAIB_BASE_PROPERTY + "conversio.imprimible.contrasenya");
 	}
 	
+	private String loggerLevel() {
+		String level = getProperty(ARXIUCAIB_BASE_PROPERTY + "debug");
+		if ("true".equals(level)) {
+			level = "debug"; 
+		}
+	  return level;
+	}
 	private boolean isDebug() {
-	  return "true".equals(getProperty(ARXIUCAIB_BASE_PROPERTY + "debug"));
+		  return getProperty(ARXIUCAIB_BASE_PROPERTY + "debug") != null 
+				  && "false".compareTo(getProperty(ARXIUCAIB_BASE_PROPERTY + "debug")) != 0 ;
 	}
 	
 	
