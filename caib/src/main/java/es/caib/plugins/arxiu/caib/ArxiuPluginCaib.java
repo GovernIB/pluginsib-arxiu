@@ -569,11 +569,11 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 	}
 
 	@Override
-	public void expedientReobrir(
+	public String expedientReobrir(
 			final String identificador) throws ArxiuException {
 		String metode = Servicios.REOPEN_FILE;
 		try {
-			getArxiuClient().generarEnviarPeticio(
+			ReopenFileResult resposta = getArxiuClient().generarEnviarPeticio(
 					metode,
 					ReopenFile.class,
 					new GeneradorParam<ParamNodeId>() {
@@ -586,6 +586,9 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 					},
 					ParamNodeId.class,
 					ReopenFileResult.class);
+			return resposta != null && resposta.getReopenFileResult() != null ? 
+					resposta.getReopenFileResult().getResParam()
+					: null;
 		} catch (ArxiuException aex) {
 			throw aex;
 		} catch (Exception ex) {

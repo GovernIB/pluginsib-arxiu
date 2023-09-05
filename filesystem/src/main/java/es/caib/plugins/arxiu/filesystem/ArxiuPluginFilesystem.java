@@ -296,7 +296,7 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 	}
 
 	@Override
-	public void expedientReobrir(
+	public String expedientReobrir(
 			String identificador) throws ArxiuException {
 		try {
 			LuceneHelper luceneHelper = getLuceneHelper();
@@ -322,6 +322,7 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 						ex);
 			}
 		}
+		return identificador;
 	}
 
 	@Override

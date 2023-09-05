@@ -118,10 +118,11 @@ public interface IArxiuPlugin extends IPlugin {
      * 
      * @param identificador
      *            Identificador de l'expedient.
+     * @return L'identificador de l'expedient reobert. Per un expedient tancat a l'Arxiu retorna l'identificador de l'expedient còpia.
      * @throws ArxiuException
      *             Si es produeix algun problema al realitzar l’operació amb l’arxiu.
      */
-    public void expedientReobrir(String identificador) throws ArxiuException;
+    public String expedientReobrir(String identificador) throws ArxiuException;
 
     /**
      * Exporta l'expedient en format ENI.
