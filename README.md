@@ -3,10 +3,10 @@
 
 ***Versions***
 
-> - Versió Estable: [PLUGINSIB-ARXIU 2.0.26](../../releases/tag/2.0.26).
->   - API v2.0.26
->   - Arxiu CAIB v2.0.26
->   - Filesystem 2.0.26
+> - Versió Estable: [PLUGINSIB-ARXIU 2.0.27](../../releases/tag/2.0.27).
+>   - API v2.0.27
+>   - Arxiu CAIB v2.0.27
+>   - Filesystem 2.0.27
 > - Branca activa: __pluginsib-arxiu-2.0__ (branca [pluginsib-arxiu-2.0](../../tree/pluginsib-arxiu-2.0))
 
 ***Descripció***
