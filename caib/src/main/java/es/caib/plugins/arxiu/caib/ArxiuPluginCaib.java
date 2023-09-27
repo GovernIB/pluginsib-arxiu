@@ -769,10 +769,12 @@ public class ArxiuPluginCaib extends AbstractArxiuPlugin implements IArxiuPlugin
 			comprovarAbsenciaMetadadaCsv(document.getMetadades());
 			comprovarFirma(document);
 			if (DocumentEstat.DEFINITIU.equals(document.getEstat())) {
+				/** #85 Es treu la validació per poder guardar com a definitiu un document TF04 CAdES detached amb firma i contingut
 				if (document.getContingut() != null) {
 					throw new ArxiuValidacioException(
 							"No és possible marcar el document com a definitiu si es vol modificar el seu contingut.");
 				}
+				 */
 				metode = Servicios.GENERATE_CSV;
 				GenerateDocCSVResult respostaCsv = getArxiuClient().generarEnviarPeticio(
 						metode,

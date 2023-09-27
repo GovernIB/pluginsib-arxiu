@@ -1692,6 +1692,94 @@ public class ArxiuPluginCaibTest {
 				documentPerCrear);
 	}
 	
+	@Test
+	public void documentZipCreatModificat_TF04_CAdES_detached() throws Exception {
+		System.out.println("TEST: DOCUMENT ZIP CREAT I MODIFICAT DEFINITIU TF0R - CAdES detached.");
+		String nomExp = "ARXIUAPI_prova_exp_" + System.currentTimeMillis();
+		final Expedient expedientPerCrear = new Expedient();
+		expedientPerCrear.setNom(nomExp);
+		final ExpedientMetadades metadades = new ExpedientMetadades();
+		metadades.setOrgans(organsTest);
+		metadades.setDataObertura(new Date());
+		metadades.setClassificacio("organo1_PRO_123456789");
+		metadades.setEstat(ExpedientEstat.OBERT);
+		metadades.setInteressats(interessatsTest);
+		metadades.setSerieDocumental(SERIE_DOCUMENTAL);
+		expedientPerCrear.setMetadades(metadades);
+		String nomDoc = "ARXIUAPI_prova_doc_" + System.currentTimeMillis();
+		final Document documentPerCrear = new Document();
+		documentPerCrear.setNom(nomDoc);
+		documentPerCrear.setEstat(DocumentEstat.ESBORRANY);
+		final DocumentMetadades documentMetadades = new DocumentMetadades();
+		documentMetadades.setOrigen(ContingutOrigen.CIUTADA);
+		documentMetadades.setOrgans(organsTest);
+		documentMetadades.setDataCaptura(new Date());
+		documentMetadades.setEstatElaboracio(DocumentEstatElaboracio.ORIGINAL);
+		documentMetadades.setTipusDocumental(DocumentTipus.ALTRES);
+		documentMetadades.setFormat(DocumentFormat.ZIP);
+		documentMetadades.setExtensio(DocumentExtensio.ZIP );
+		documentPerCrear.setMetadades(documentMetadades);
+		DocumentContingut documentContingut = new DocumentContingut();
+		documentContingut.setContingut(
+				IOUtils.toByteArray(
+						getDocumentAltre("annex.zip")));
+		documentContingut.setTipusMime("application/zip");
+		documentPerCrear.setContingut(documentContingut);
+		testCreantElements(
+				new TestAmbElementsCreats() {
+					@Override
+					public void executar(List<ContingutArxiu> elementsCreats) throws IOException {
+						//ContingutArxiu expedientCreat = elementsCreats.get(0);
+						//String expedientCreatId = expedientCreat.getIdentificador();
+						ContingutArxiu documentCreat = elementsCreats.get(1);
+						String documentCreatId = documentCreat.getIdentificador();
+						System.out.println(
+								"1.- Guardant document definitiu TF04 CAdES detached (" +
+								"id=" + documentCreatId + ")... ");
+						Document documentPerModificar = documentPerCrear;
+						documentPerModificar.setIdentificador(documentCreatId);
+						Firma firmaCadesDet = new Firma();
+						firmaCadesDet.setTipus(FirmaTipus.CADES_DET);
+						firmaCadesDet.setPerfil(FirmaPerfil.BES);
+						firmaCadesDet.setTipusMime("application/octet-stream");
+						firmaCadesDet.setContingut(
+								IOUtils.toByteArray(
+										getDocumentAltre("annex_zip.csig")));
+						documentPerModificar.setFirmes(Arrays.asList(firmaCadesDet));
+						DocumentMetadades documentMetadadesModificar = new DocumentMetadades();
+						documentMetadadesModificar.setFormat(DocumentFormat.ZIP);
+						documentMetadadesModificar.setExtensio(DocumentExtensio.ZIP);
+						documentPerModificar.setMetadades(documentMetadadesModificar);
+						documentPerModificar.setEstat(DocumentEstat.DEFINITIU);
+						//documentPerModificar.setEstat(DocumentEstat.ESBORRANY); // Per poder esborrar-lo de l'Arxiu
+						ContingutArxiu contingutModificat = arxiuPlugin.documentModificar(
+								documentPerModificar);
+						assertNotNull(contingutModificat);
+						System.out.println("Ok");
+						elementsCreats.clear();
+						System.out.println(
+								"2.- Comprovant firmes del document (" +
+								"id=" + documentCreatId + ")... ");
+						Document documentFirmat = arxiuPlugin.documentDetalls(
+								documentCreatId,
+								null,
+								true);
+						documentPerModificar.setMetadades(null);
+						documentFirmat.setMetadades(null);
+						documentPerModificar.setContingut(null);
+						documentFirmat.setContingut(null);
+						documentComprovar(
+								documentPerModificar,
+								documentFirmat,
+								true);
+						System.out.println("Ok");
+						// Neteja la llista d'elemetns creats per evitar que s'intentin esborrar
+					}
+				},
+				expedientPerCrear,
+				documentPerCrear);
+	}
+	
 	private void testCreantElements(
 			TestAmbElementsCreats test,
 			Object... elements) throws Exception {
