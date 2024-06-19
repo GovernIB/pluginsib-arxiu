@@ -8,7 +8,6 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.UUID;
 
-import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 
@@ -955,10 +954,10 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 
 
 
-	private LuceneHelper getLuceneHelper() {
+	private LuceneHelper getLuceneHelper() throws ArxiuException, Exception {
 		return new LuceneHelper(getPropertyBasePath());
 	}
-	private FileSystemHelper getFilesystemHelper() {
+	private FileSystemHelper getFilesystemHelper() throws ArxiuException, Exception {
 		if (filesystemHelper == null) {
 			filesystemHelper = new FileSystemHelper(getPropertyBasePath());
 		}
@@ -1014,7 +1013,7 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 
 	private String generarIdentificadorEni(
 			String uuid,
-			boolean esExpedient) throws DecoderException {
+			boolean esExpedient) throws Exception {
 		String uuidHex = uuid.replaceAll("-", "");
 		byte[] rnd = new byte[5];
 		new Random().nextBytes(rnd);
@@ -1026,12 +1025,12 @@ public class ArxiuPluginFilesystem extends AbstractArxiuPlugin implements IArxiu
 		return "ES_" + getPropertyOrganCodiDir3() + "_" + anyActual + "_" + exp + uuidBase64.replace("/", "-");
 	}
 
-	private String getPropertyBasePath() {
-		return getProperty(ARXIUFILESYSTEM_BASE_PROPERTY + "base.path");
+	private String getPropertyBasePath() throws Exception {
+		return getPropertyRequired(ARXIUFILESYSTEM_BASE_PROPERTY + "base.path");
 	}
 
-	private String getPropertyOrganCodiDir3() {
-		return getProperty(ARXIUFILESYSTEM_BASE_PROPERTY + "organ.codi.dir3");
+	private String getPropertyOrganCodiDir3() throws Exception {
+		return getPropertyRequired(ARXIUFILESYSTEM_BASE_PROPERTY + "organ.codi.dir3");
 	}
 
 	@Override

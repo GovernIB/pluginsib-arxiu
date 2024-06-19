@@ -16,3 +16,4 @@
 *.iml
 /.settings
 /caib/plugin.properties
+/filesystem/plugin.properties

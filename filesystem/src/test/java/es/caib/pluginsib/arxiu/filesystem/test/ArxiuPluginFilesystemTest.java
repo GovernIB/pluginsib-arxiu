@@ -8,6 +8,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -66,9 +67,9 @@ public class ArxiuPluginFilesystemTest {
 	@BeforeClass
 	public static void setUp() throws IOException {
 		Properties properties = new Properties();
-		properties.load(
-				ArxiuPluginFilesystemTest.class.getClassLoader().getResourceAsStream(
-						"es/caib/plugins/arxiu/filesystem/test.properties"));
+		properties.load(new FileInputStream("plugin.properties"));
+				//ArxiuPluginFilesystemTest.class.getClassLoader().getResourceAsStream(
+				//		"es/caib/plugins/arxiu/filesystem/test.properties"));
 		arxiuPlugin = new ArxiuPluginFilesystem(
 				"",
 				properties);
