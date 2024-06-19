@@ -7,7 +7,7 @@
 >   - API v2.0.27
 >   - Arxiu CAIB v2.0.27.1
 >   - Filesystem 2.0.27
-> - Branca activa: __pluginsib-arxiu-2.0__ (branca [pluginsib-arxiu-2.0](../../tree/pluginsib-arxiu-2.0))
+> - Branca activa: __pluginsib-arxiu-3.0__ (branca [pluginsib-arxiu-3.0](../../tree/pluginsib-arxiu-3.0))
 
 ***Descripció***
 
