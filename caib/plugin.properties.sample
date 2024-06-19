@@ -1,25 +1,25 @@
-plugin.arxiu.caib.base.url=https://afirmades.caib.es:4430/esb
-#plugin.arxiu.caib.base.url=https://esbpre.caib.es/esb
-plugin.arxiu.caib.aplicacio.codi=ARXIUTEST
-plugin.arxiu.caib.usuari=USERNAME
-plugin.arxiu.caib.contrasenya=PASSWD
-plugin.arxiu.caib.conversio.imprimible.url=http://localhost:28080/concsv/rest/printable/uuid
-#plugin.arxiu.caib.conversio.imprimible.url=https://proves.caib.es/concsv/rest/printable/uuid
-plugin.arxiu.caib.conversio.imprimible.usuari=USUARI
-plugin.arxiu.caib.conversio.imprimible.contrasenya=PASSWD
+pluginsib.arxiu.caib.base.url=https://afirmades.caib.es:4430/esb
+#pluginsib.arxiu.caib.base.url=https://esbpre.caib.es/esb
+pluginsib.arxiu.caib.aplicacio.codi=ARXIUTEST
+pluginsib.arxiu.caib.usuari=USERNAME
+pluginsib.arxiu.caib.contrasenya=PASSWD
+pluginsib.arxiu.caib.conversio.imprimible.url=http://localhost:28080/concsv/rest/printable/uuid
+#pluginsib.arxiu.caib.conversio.imprimible.url=https://proves.caib.es/concsv/rest/printable/uuid
+pluginsib.arxiu.caib.conversio.imprimible.usuari=USUARI
+pluginsib.arxiu.caib.conversio.imprimible.contrasenya=PASSWD
 
 # Si val true imprimeix el contingut de l'enviament i resposta json
 # Per defecte false
-# plugin.arxiu.caib.debug=false
+# pluginsib.arxiu.caib.debug=false
 
-#plugin.arxiu.caib.original_file_url_EL=http://localhost:28080/concsv/rest/original/uuid/${uuid}
+#pluginsib.arxiu.caib.original_file_url_EL=http://localhost:28080/concsv/rest/original/uuid/${uuid}
 
-#plugin.arxiu.caib.printable_file_url_EL=http://localhost:28080/concsv/rest/printable/uuid/${uuid}
+#pluginsib.arxiu.caib.printable_file_url_EL=http://localhost:28080/concsv/rest/printable/uuid/${uuid}
 
-#plugin.arxiu.caib.eni_file_url_EL=http://localhost:28080/concsv/rest/eni/uuid/${uuid}
+#pluginsib.arxiu.caib.eni_file_url_EL=http://localhost:28080/concsv/rest/eni/uuid/${uuid}
 
-#plugin.arxiu.caib.csv_validation_web_EL=http://localhost:28080/concsv/
+#pluginsib.arxiu.caib.csv_validation_web_EL=http://localhost:28080/concsv/
 
-#plugin.arxiu.caib.csv.definicio=http://localhost:28080/concsv/csv_generation_definition.pdf
+#pluginsib.arxiu.caib.csv.definicio=http://localhost:28080/concsv/csv_generation_definition.pdf
 
-#plugin.arxiu.caib.validation_file_url_EL=http://localhost:28080/concsv/web/validationfile/${uuid}
+#pluginsib.arxiu.caib.validation_file_url_EL=http://localhost:28080/concsv/web/validationfile/${uuid}
